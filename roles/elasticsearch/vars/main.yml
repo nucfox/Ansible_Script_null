@@ -1,0 +1,14 @@
+elastic_user: elastic
+elastic_path: /usr/local
+source_path: /usr/local/src
+link_path: /usr/local/elasticsearch
+whether_repeat_install: true
+
+cluster_name: internet_of_vehicles
+node_name: "elastic_vehicle_{{ ansible_default_ipv4.address | replace('.', '') }}"
+data_path: "{{ link_path }}/data"
+logs_path: "{{ link_path }}/logs"
+network_host: "{{ ansible_default_ipv4.address }}"
+http_port: 9200
+#discovery_hosts: "10.100.58.15"
+discovery_hosts: "10.100.58.44, 10.100.58.45, 10.100.58.46"

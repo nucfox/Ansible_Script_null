@@ -1,0 +1,17 @@
+---
+- name: Install required packages
+  yum: name={{ item }} state=latest
+  with_items:
+  - golang
+
+- name: Add Golang environment variables
+  blockinfile:
+    dest: /etc/profile
+    marker: "# {mark} ANSIBLE MANAGED BLOCK Golang ENV"
+    block: |
+      GOPATH=/usr/local/go
+      PATH=$PATH:$GOPATH/bin
+      export PATH GOPATH
+
+- name: simply install all of the programs in this repo
+  shell: "source /etc/profile && go get -u github.com/cloudflare/cfssl/cmd/..."

@@ -1,0 +1,44 @@
+---
+- name: copy kube package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: kube_program
+- unarchive: src={{ kube_program.results[0].dest }} dest={{ source_path }} copy=no
+- name: install kube-client
+  copy:
+    src: "{{ source_path }}/kubernetes/client/bin/kubectl"
+    dest: "{{ kube_path }}"
+    mode: 0755
+    remote_src: True
+- copy:
+    src: "{{ source_path }}/kubernetes/client/bin/kubefed"
+    dest: "{{ kube_path }}"
+    mode: 0755
+    remote_src: True
+
+- file:
+  args:
+    path: "{{ admin_ssl_path }}"
+    state: directory
+
+- file:
+  args:
+    path: "{{ ca_ssl_path }}"
+    state: directory
+
+- name: copy admin pem
+  copy: src={{ item }} dest={{ admin_ssl_path }}
+  with_fileglob:
+  - pem/admin*pem
+
+- name: copy ca pem
+  copy: src={{ item }} dest={{ ca_ssl_path }}
+  with_fileglob:
+  - pem/ca*pem
+
+- name: set kubectl kubeconfig file
+  shell: kubectl config set-cluster kubernetes --certificate-authority={{ ca_ssl_path }}/ca.pem --embed-certs=true --server={{ KUBE_APISERVER }}
+- shell: kubectl config set-credentials admin --client-certificate={{ admin_ssl_path }}/admin.pem --embed-certs=true --client-key={{ admin_ssl_path }}/admin-key.pem
+- shell: kubectl config set-context kubernetes --cluster=kubernetes --user=admin
+- shell: kubectl config use-context kubernetes

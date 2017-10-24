@@ -1,0 +1,26 @@
+---
+- name: STOP etcd
+  systemd:
+    name: etcd
+    state: stopped
+- name: remove etcd
+  file: 
+    path: "{{ etcd_path }}/etcd"
+    state: absent
+- file: 
+    path: "{{ etcd_path }}/etcdctl"
+    state: absent
+- file: 
+    path: "{{ config_path }}"
+    state: absent
+- file: 
+    path: "{{ data_path }}"
+    state: absent
+- file: 
+    path: /usr/lib/systemd/system/etcd.service
+    state: absent
+#- name: remove etcd user
+#  user:
+#    name: "{{ etcd_user }}"
+#    state: absent
+#    remove: yes

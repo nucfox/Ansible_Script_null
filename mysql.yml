@@ -1,0 +1,5 @@
+- hosts: 10.100.57.54
+  remote_user: root
+  roles:
+  - mysql
+

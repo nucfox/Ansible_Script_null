@@ -1,0 +1,14 @@
+---
+mysql_user: mysql
+mysql_port: 3306
+source_path: /usr/local/src
+install_path: /u06
+mysql_path: "{{ install_path }}/mysql{{ mysql_port }}"
+
+link_srcpath: "{{ mysql_path }}"
+link_destpath: /usr/local/mysql
+link_mycnfsrc: "{{ mysql_path }}/my.cnf"
+link_mycnfdest: /etc/my.cnf
+whether_force_link: false
+
+whether_repeat_install: true

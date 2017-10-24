@@ -1,0 +1,8 @@
+# kubernetes 服务 IP (预分配，一般是 SERVICE_CIDR 中第一个IP)
+# CLUSTER_KUBERNETES_SVC_IP="10.254.0.1"
+
+# 替换为部署的 kubernetes master 节点 机器 IP
+# MASTER_IP="10.100.57.54","10.100.57.55","10.100.57.56"
+
+# 当前部署的机器 IP
+# NODE_IP="10.100.57.54","10.100.57.55","10.100.57.56"

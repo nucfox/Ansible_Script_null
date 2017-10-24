@@ -1,0 +1,4 @@
+- hosts: 172.24.17.225
+  remote_user: root
+  roles:
+  - filebeat

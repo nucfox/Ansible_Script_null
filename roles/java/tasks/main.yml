@@ -1,0 +1,10 @@
+---
+- name: copy jdk
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/{{ java_version }}/*.rpm
+  register: java_program
+- name: "installation"
+  yum:
+    name: "{{ java_program.results[0].dest }}"
+- include: java-env.yml

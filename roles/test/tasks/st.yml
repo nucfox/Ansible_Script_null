@@ -1,0 +1,4 @@
+- debug:
+    msg: "outer item={{ st_item }} st item={{ item }}"
+  with_items:
+    - "{{ Storage_dir.{{ st_item }} }}" 

@@ -1,0 +1,38 @@
+---
+- name: copy msmtp Source package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar
+  register: msmtp_program
+- file:
+  args:
+    path: "{{ source_path }}/{{ msmtp_program.results[0].dest | basename | regex_replace('^(.*).tar$', '\\1') }}"
+    state: absent
+  when: whether_repeat_install
+- unarchive: src={{ msmtp_program.results[0].dest }} dest={{ source_path }} copy=no
+  register: msmtp_ua_program
+- name: install msmtp_server
+  shell: "./configure --prefix={{ msmtp_path }}/{{ msmtp_program.results[0].dest | basename | regex_replace('^(.*).tar$', '\\1') }}  && make && make install"
+  args:
+    chdir: "{{ source_path }}/{{ msmtp_program.results[0].dest | basename | regex_replace('^(.*).tar$', '\\1') }}"
+  when: msmtp_ua_program.skipped is undefined
+- file:
+    path: "{{ msmtp_path }}/{{ msmtp_program.results[0].dest | basename | regex_replace('^(.*).tar$', '\\1') }}/etc"
+    state: directory
+- file:
+  args:
+    src: "{{ msmtp_path }}/{{ msmtp_program.results[0].dest | basename | regex_replace('^(.*).tar$', '\\1') }}"
+    path: "{{ link_path }}"
+    state: link
+- file:
+  args:
+    src: "{{ link_path }}/bin/msmtp"
+    path: "/usr/local/bin/msmtp"
+    state: link
+#- shell: "ln -s {{ link_path }}/bin/* /usr/local/bin"
+- name: provides msmtp config
+  template: src="msmtprc" dest="{{ link_path }}/etc" mode="0600"
+- name: provides home msmtp config
+  template: src=".msmtprc" dest=/home/{{ item }} owner={{ item }} group={{ item }} mode=0600
+  with_items: "{{ mail_user }}"
+

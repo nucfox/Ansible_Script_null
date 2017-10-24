@@ -1,0 +1,49 @@
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=network.target
+After=etcd.service
+Wants=etcd.service
+
+[Service]
+EnvironmentFile=-/etc/kubernetes/apiserver
+User=kube
+ExecStart={{ kube_path }}/kube-apiserver \
+${KUBE_ADMISSION_CONTROL} \
+${KUBE_ADVERTISE_ADDRESS} \
+${KUBE_BIND_ADDRESS} \
+${KUBE_INSECURE_BIND_ADDRESS} \
+${KUBE_AUTHORIZATION_MODE} \
+${KUBE_RUNTIME_CONFIG} \
+${KUBE_KUBELET_HTTPS} \
+--experimental-bootstrap-token-auth \
+${KUBE_TOKEN_AUTH_FILE} \
+${KUBE_SERVICE_CLUSTER_IP_RANGE} \
+${KUBE_SERVICE_NODE_PORT_RANGE} \
+${KUBE_TLS_CERT_FILE} \
+${KUBE_TLS_PRIVATE_KEY_FILE} \
+${KUBE_CLIENT_CA_FILE} \
+${KUBE_SERVICE_ACCOUNT_KEY_FILE} \
+${KUBE_ETCD_CAFILE} \
+${KUBE_ETCD_CERTFILE} \
+${KUBE_ETCD_KEYFILE} \
+${KUBE_ETCD_SERVERS} \
+--enable-swagger-ui \
+--allow-privileged=true \
+--apiserver-count=3 \
+--audit-log-maxage=10 \
+--audit-log-maxbackup=3 \
+--audit-log-maxsize=100 \
+--audit-log-path={{ log_path }}/audit.log \
+--logtostderr=false \
+--log-dir={{ log_path }} \
+--event-ttl=1h \
+--v=2
+
+Restart=on-failure
+Type=notify
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

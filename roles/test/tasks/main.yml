@@ -1,0 +1,65 @@
+- name: register var
+  command: /usr/bin/ssh -V
+  register: var1
+- name: cat hosts
+  shell: "cat /etc/ansible/hosts"
+#- debug: 
+#    var: var1.stderr
+- name: register limits
+  command: ls /etc/security/limits.d
+  register: var2
+#- debug:
+#    var: var2.stdout_lines[0]
+- name: provides test
+  template: src="test.yml" dest="/tmp/"
+
+- name: create test dir
+  file:
+    path: /u06/test/aa/bb
+    state: directory
+    owner: etsuser
+    group: etsuser
+
+- name: register docker-ce status
+  shell: rpm -q docker-ce
+  register: docker_ce_IF
+  ignore_errors: True
+
+- debug:
+    var: FI
+
+- name: display yum-docker var
+  debug: var=docker_ce_IF
+  when: docker_ce_IF|succeeded and FI|int == 1
+  #when: docker_ce_IF|failed and FI == 1
+
+- name: "Display all cluster names"
+  debug: var=item
+  with_items: "{{domain_definition|json_query('domain.cluster[*].name')}}"
+- debug: var=Storage
+
+- name: "Display s1"
+  debug: var=item
+  with_items: "{{ Storage|json_query('dir.[*]') }}"
+
+- name: create Storage dir
+  file:
+    path: "{{ item.value }}"
+    state: directory
+    recurse: yes
+    owner: "etsuser"
+    group: "etsuser"
+  with_dict:
+    "{{ Storage.dir }}"
+
+#- name: "Display s1"
+#  debug: var=item
+#  with_items: "{{ Storage_dir1|json_query('dir.[*]')|json_query('item.[*]') }}"
+
+#- include: inner.yml
+#  with_items:
+#    - 1
+#    - 2
+#    - 3
+#  loop_control:
+#    loop_var: outer_item

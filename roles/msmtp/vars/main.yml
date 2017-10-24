@@ -1,0 +1,13 @@
+---
+source_path: /usr/local/src
+whether_repeat_install: true
+
+msmtp_path: /usr/local
+link_path: /usr/local/msmtp
+
+mail_server: "sysadmin@foton.com.cn"
+mail_smtp: "smtp.foton.com.cn"
+mail_port: "25"
+mail_password: "foton_123sys"
+mail_user: [zabbix]
+

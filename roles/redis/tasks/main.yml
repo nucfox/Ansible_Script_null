@@ -1,0 +1,14 @@
+---
+- name: creat redis user
+  user: name={{ redis_user }} append="yes" shell=/bin/false createhome=no
+- name: copy redis Source package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: redis_program
+- command: ls "{{ link_path }}"
+  register: lslink
+  ignore_errors: true
+- include: redis_install.yml
+  when: whether_repeat_install or lslink|failed
+- include: redis_config.yml

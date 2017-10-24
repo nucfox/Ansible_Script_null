@@ -1,0 +1,9 @@
+---
+- name: register docker-ce status
+  shell: rpm -q docker-ce
+  register: docker_ce_IF
+  ignore_errors: True
+
+- include: install.yml
+  static: no
+  when: docker_ce_IF|failed or FI|int == 1

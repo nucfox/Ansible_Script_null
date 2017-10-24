@@ -1,0 +1,9 @@
+---
+dependencies:
+  - role: msmtp
+    mail_user: "{{ zabbix_user }}"
+  - role: mutt
+  - role: php
+  - role: nginx
+#  - role: mysql
+#    mysql_port: "{{ mysql_port_dp }}"

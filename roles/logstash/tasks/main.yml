@@ -1,0 +1,18 @@
+---
+- name: "creat {{ logstash_user }} user"
+  user: name={{ logstash_user }} append=yes
+- name: copy logstash package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: logstash_program
+- command: ls "{{ link_path }}"
+  register: lslink
+  ignore_errors: true
+- include: logstash_install.yml
+  when: whether_repeat_install or lslink|failed
+- include: logstash_config.yml
+- include: plugin.yml
+  tags:
+  - install_plugin
+

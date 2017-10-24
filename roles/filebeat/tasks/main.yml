@@ -1,0 +1,14 @@
+---
+- name: copy filebeat package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: filebeat_program
+- command: ls "{{ link_path }}"
+  register: lslink
+  ignore_errors: true
+- include: filebeat_install.yml
+  when: whether_repeat_install or lslink|failed
+- include: filebeat_config.yml
+- include: scan_api_log.yml
+  when: scan_run

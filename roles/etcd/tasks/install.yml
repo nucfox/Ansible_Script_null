@@ -1,0 +1,67 @@
+---
+- name: "creat {{ etcd_user }} user"
+  user:
+    name: "{{ etcd_user }}"
+    comment: "etcd user"
+    home: /var/lib/etcd
+    shell: /sbin/nologin
+    append: yes
+- name: copy etcd package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: etcd_program
+- unarchive: src={{ etcd_program.results[0].dest }} dest={{ source_path }} copy=no
+- name: install etcd
+  copy:
+    src: "{{ source_path }}/{{ etcd_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/etcd"
+    dest: "{{ etcd_path }}"
+    mode: 0755
+    remote_src: True
+- copy:
+    src: "{{ source_path }}/{{ etcd_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/etcdctl"
+    dest: "{{ etcd_path }}"
+    mode: 0755
+    remote_src: True
+
+- file:
+  args:
+    path: "{{ data_path }}"
+    state: directory
+    owner: "{{ etcd_user }}"
+    group: "{{ etcd_user }}"
+    mode: 0755
+
+- file:
+  args:
+    path: "{{ config_path }}"
+    state: directory
+
+- file:
+  args:
+    path: "{{ etcd_ssl_path }}"
+    state: directory
+
+- file:
+  args:
+    path: "{{ ca_ssl_path }}"
+    state: directory
+
+- name: copy ca pem
+  copy: src={{ item }} dest={{ ca_ssl_path }}
+  with_fileglob:
+  - pem/ca*pem
+
+- name: copy etcd pem
+  copy: src={{ item }} dest={{ etcd_ssl_path }}
+  with_fileglob:
+  - pem/etcd*pem
+
+- name: copy systemd file
+  template: src=etcd.service dest=/usr/lib/systemd/system owner=root group=root mode=0644
+  become: true
+  become_user: root
+  become_method: sudo
+- name: copy config file
+  template: src=etcd.conf dest={{ config_path }} owner=root group=root
+  notify: Start etcd

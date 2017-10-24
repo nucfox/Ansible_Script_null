@@ -1,0 +1,4 @@
+- hosts: mongod_replica
+  remote_user: root
+  roles:
+  - mongodb

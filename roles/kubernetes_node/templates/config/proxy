@@ -1,0 +1,15 @@
+###
+# kubernetes proxy config
+
+# default config should be adequate
+
+# The address for the info server to serve on (set to 0.0.0.0 or "" for all interfaces)
+KUBE_PROXY_ADDRESS="--bind-address={{ NODE_IP }}"
+
+# You may leave this blank to use the actual hostname
+KUBE_PROXY_HOSTNAME="--hostname-override={{ NODE_IP }}"
+
+KUBE_PROXY_CLUSTER_CIDR="--cluster-cidr={{ SERVICE_CIDR }}"
+
+# Add your own!
+KUBE_PROXY_ARGS=""

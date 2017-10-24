@@ -1,0 +1,56 @@
+- name: Installation dependencies ssh
+  yum: name={{ item }} state=latest
+  with_items:
+  - make
+  - automake
+  - gcc
+  - gcc-c++
+  - pam-devel
+  - wget
+  - openssl
+  - openssl-devel
+- name: copy ssh Source package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: ssh_program
+- file:
+  args:
+    path: "{{ source_path }}/{{ ssh_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    state: absent
+  when: whether_repeat_install
+- unarchive:
+    src: "{{ ssh_program.results[0].dest }}"
+    dest: "{{ source_path }}"
+    copy: no
+    creates: "{{ source_path }}/{{ ssh_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+  register: ssh_ua_program
+- name: register SSH version
+  command: /usr/bin/ssh -V
+  register: sshV
+- name: create backup directory
+  file:
+    path: "/tmp/backup_ssh_{{ sshV.stderr | regex_replace('^(.*),.*', '\\1') }}"
+    state: directory
+- name: backup ssh config
+  shell: "mv /etc/ssh/* /tmp/backup_ssh_{{ sshV.stderr | regex_replace('^(.*),.*', '\\1') }}"
+- name: install ssh server
+  shell: "./configure  --with-zlib --with-ssl-dir --with-pam --bindir=/usr/bin  --sbindir=/usr/sbin --sysconfdir=/etc/ssh  && make -j4 && make install"
+  args:
+    chdir: "{{ source_path }}/{{ ssh_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+  when: ssh_ua_program.skipped is undefined
+- name: provides sshd init.d file
+  copy: 
+    src: "{{ source_path }}/{{ ssh_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/contrib/redhat/sshd.init"
+    dest: /etc/init.d
+    owner: root
+    group: root
+    mode: 0750
+    remote_src: True
+  become: true
+  become_user: root
+  become_method: sudo
+  when: ansible_distribution_major_version == "6"
+- include: ssh-cnf.yml
+  tags:
+  - config

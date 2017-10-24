@@ -1,0 +1,7 @@
+- name: Add php environment variables
+  blockinfile: 
+    dest: /etc/profile
+    marker: "# {mark} ANSIBLE MANAGED BLOCK PHP ENV"
+    block: |
+      PATH=$PATH:/usr/local/php/bin:/usr/local/php/sbin
+      export PATH

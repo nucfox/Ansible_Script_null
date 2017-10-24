@@ -1,0 +1,103 @@
+---
+- name: "creat {{ kube_user }} user"
+  user:
+    name: "{{ kube_user }}"
+    comment: "Kubernetes user"
+    createhome: no
+#    home:
+    shell: /sbin/nologin
+    append: yes
+- name: copy kube package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: kube_program
+- unarchive: src={{ kube_program.results[0].dest }} dest={{ source_path }} copy=no
+- name: install kube-apiserver
+  copy:
+    src: "{{ source_path }}/kubernetes/server/bin/kube-apiserver"
+    dest: "{{ kube_path }}"
+    mode: 0755
+    remote_src: True
+- name: install kube-controller-manager
+  copy:
+    src: "{{ source_path }}/kubernetes/server/bin/kube-controller-manager"
+    dest: "{{ kube_path }}"
+    mode: 0755
+    remote_src: True
+- name: install kube-scheduler
+  copy:
+    src: "{{ source_path }}/kubernetes/server/bin/kube-scheduler"
+    dest: "{{ kube_path }}"
+    mode: 0755
+    remote_src: True
+
+- name: create config dir
+  file:
+  args:
+    path: "{{ config_path }}"
+    state: directory
+- name: create log dir
+  file:
+  args:
+    path: "{{ log_path }}"
+    state: directory
+    owner: "{{ kube_user }}"
+    group: "{{ kube_user }}"
+- name: create /var/run/kubernetes dir
+  file:
+  args:
+    path: /var/run/kubernetes
+    state: directory
+    owner: "{{ kube_user }}"
+    group: "{{ kube_user }}"
+
+- file:
+  args:
+    path: "{{ ca_ssl_path }}"
+    state: directory
+- file:
+  args:
+    path: "{{ kube_ssl_path }}"
+    state: directory
+    
+- name: copy ca pem
+  copy: src={{ item }} dest={{ ca_ssl_path }}
+  with_fileglob:
+  - pem/ca*pem
+- name: copy kube pem
+  copy: src={{ item }} dest={{ kube_ssl_path }}
+  with_fileglob:
+  - pem/kubernetes*pem
+
+- name: copy systemd kube-apiserver file
+  template: src=systemd/kube-apiserver.service dest=/usr/lib/systemd/system owner=root group=root mode=0644
+  become: true
+  become_user: root
+  become_method: sudo
+- name: copy systemd kube-controller-manager.service file
+  template: src=systemd/kube-controller-manager.service dest=/usr/lib/systemd/system owner=root group=root mode=0644
+  become: true
+  become_user: root
+  become_method: sudo
+- name: copy systemd kube-scheduler.service file
+  template: src=systemd/kube-scheduler.service dest=/usr/lib/systemd/system owner=root group=root mode=0644
+  become: true
+  become_user: root
+  become_method: sudo
+
+- name: copy token.csv file
+  template: src=token.csv dest={{ config_path }} owner=root group=root
+- name: copy config apiserver file
+  template: src=config/apiserver dest={{ config_path }} owner=root group=root
+  notify: Start apiserver
+- name: copy config controller-manager file
+  template: src=config/controller-manager dest={{ config_path }} owner=root group=root
+  notify: Start controller-manager
+- name: copy config scheduler file
+  template: src=config/scheduler dest={{ config_path }} owner=root group=root
+  notify: Start scheduler
+#- name: copy config file
+#  template: src=config/config dest={{ config_path }} owner=root group=root
+#- name: copy kubernetes.conf file
+#  template: src=usr/lib/tmpfiles.d/kubernetes.conf dest=/usr/lib/tmpfiles.d owner=root group=root

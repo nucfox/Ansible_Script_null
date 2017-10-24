@@ -1,0 +1,44 @@
+---
+- file:
+  args:
+    path: "{{ redis_path }}/{{ redis_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    state: absent
+- unarchive: src={{ redis_program.results[0].dest }} dest={{ source_path }} copy=no
+- name: install redis server
+  shell: "make && make PREFIX={{ redis_path }}/{{ redis_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} install"
+  args:
+    chdir: "{{ source_path }}/{{ redis_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+- file:
+  args:
+    src: "{{ redis_path }}/{{ redis_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ link_path }}"
+    state: link
+    owner: "{{ redis_user }}"
+    group: "{{ redis_user }}"
+- file:
+  args:
+    path: "{{ link_path }}/var/run"
+    state: directory
+- file:
+  args:
+    path: "{{ link_path }}/var/lock/subsys"
+    state: directory
+- file:
+  args:
+    path: "{{ link_path }}/logs"
+    state: directory
+- file:
+  args:
+    path: "{{ link_path }}/data"
+    state: directory
+- file:
+  args:
+    path: "{{ link_path }}/etc"
+    state: directory
+- file:
+  args:
+    path: "{{ redis_path }}/{{ redis_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    recurse: yes
+    state: directory
+    owner: "{{ redis_user }}"
+    group: "{{ redis_user }}"

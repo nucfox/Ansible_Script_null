@@ -1,0 +1,7 @@
+---
+kube_path: /usr/bin
+source_path: /usr/local/src
+admin_ssl_path: /etc/kubernetes/ssl
+ca_ssl_path: /etc/kubernetes/ssl
+
+KUBE_APISERVER: https://10.100.57.54:6443

@@ -1,0 +1,25 @@
+###
+# The following values are used to configure the kubernetes controller-manager
+
+# defaults from config and apiserver should be adequate
+
+KUBE_ADDRESS="--address=127.0.0.1"
+
+KUBE_MASTER="--master=http://{{ MASTER_IP }}:8080"
+
+#KUBE_ALLOCATE_NODE_CIDRS="--allocate-node-cidrs=true"
+
+KUBE_SERVICE_CLUSTER_IP_RANGE="--service-cluster-ip-range={{ SERVICE_CIDR }}"
+
+KUBE_CLUSTER_CIDR="--cluster-cidr={{ CLUSTER_CIDR }}"
+KUBE_CLUSTER_NAME="--cluster-name={{ CLUSTER_NAME }}"
+
+KUBE_CLUSTER_SIGNING_CERT_FILE="--cluster-signing-cert-file={{ ca_ssl_path }}/ca.pem"
+KUBE_CLUSTER_SIGNING_KEY_FILE="--cluster-signing-key-file={{ ca_ssl_path }}/ca-key.pem"
+KUBE_SERVICE_ACCOUNT_PRIVATE_KEY_FILE="--service-account-private-key-file={{ ca_ssl_path }}/ca-key.pem"
+KUBE_ROOT_CA_FILE="--root-ca-file={{ ca_ssl_path }}/ca.pem"
+
+#KUBE_LEADER_ELECT="--leader-elect=true"
+
+# Add your own!
+#KUBE_CONTROLLER_MANAGER_ARGS="--log-dir={{ log_path }} --v=2"

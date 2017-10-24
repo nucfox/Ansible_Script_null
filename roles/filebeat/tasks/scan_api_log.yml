@@ -1,0 +1,9 @@
+---
+- name: scan etsv api log
+  script: "scan_api/etsvapiscan.sh {{ etsv_path }} {{ link_path }}"
+  tags:
+  - etsv_api
+- name: scan etsv api log
+  script: "scan_api/tomcatapiscan.sh {{ tomcat_path }} {{ link_path }}"
+  tags:
+  - tomcat_api

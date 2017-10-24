@@ -1,0 +1,4 @@
+---
+dependencies:
+ - role: kubernetes_client
+   kubeC_stated: install

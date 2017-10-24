@@ -1,0 +1,14 @@
+---
+- name: "creat {{ elastic_user }} user"
+  user: name={{ elastic_user }} append=yes
+- name: copy elastic package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: elastic_program
+- command: ls "{{ link_path }}"
+  register: lslink
+  ignore_errors: true
+- include: elastic_install.yml
+  when: whether_repeat_install or lslink|failed
+- include: elastic_config.yml

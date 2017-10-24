@@ -1,0 +1,10 @@
+- name: start zabbix_server
+  service:
+    enabled: yes
+    name: zabbix_server
+    state: restarted
+- name: start nginx_server
+  service:
+    enabled: yes
+    name: nginxd
+    state: restarted

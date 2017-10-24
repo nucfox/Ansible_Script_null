@@ -1,0 +1,8 @@
+---
+- name: remove kube-client
+  file:
+    path: "{{ kube_path }}/kubectl"
+    state: absent
+- file:
+    path: "{{ kube_path }}/kubefed"
+    state: absent

@@ -1,0 +1,140 @@
+---
+- include_vars: single_var.yml
+  tags:
+  - link
+- name: install epel 6 yum
+  yum: name=https://mirrors.tuna.tsinghua.edu.cn/epel/epel-release-latest-6.noarch.rpm
+  when: ansible_distribution_major_version == "6"
+- name: install epel 7 yum
+  yum: name=https://mirrors.tuna.tsinghua.edu.cn/epel/epel-release-latest-7.noarch.rpm
+  when: ansible_distribution_major_version == "7"
+- name: Installation dependencies mysql
+  yum: name={{ item }} state=latest
+  with_items:
+  - ncurses-devel
+  - perl
+  - perl-Module-Install.noarch
+- name: creat mysql user
+  user: name={{ mysql_user }} append="yes"
+- name: copy mysql Source package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: mysql_program
+- file:
+  args:
+    path: "{{ source_path }}/{{ mysql_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    state: absent
+  when: whether_repeat_install
+- unarchive:
+    src: "{{ mysql_program.results[0].dest }}"
+    dest: "{{ source_path }}"
+    copy: no
+    creates: "{{ source_path }}/{{ mysql_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+  register: mysql_ua_program
+- name: install mysql server
+  shell: "/usr/local/bin/cmake -DCMAKE_INSTALL_PREFIX={{ mysql_path }} -DMYSQL_DATADIR={{ mysql_path }}/data -DSYSCONFDIR={{ mysql_path }} -DWITH_MYISAM_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=1 -DMYSQL_UNIX_ADDR=/tmp/mysql{{ mysql_port }}.sock -DMYSQL_TCP_PORT={{ mysql_port }} -DENABLED_LOCAL_INFILE=1 -DWITH_PARTITION_STORAGE_ENGINE=1 -DEXTRA_CHARSETS=all -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci && make -j4 && make install"
+  args:
+    chdir: "{{ source_path }}/{{ mysql_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+  when: mysql_ua_program.skipped is undefined
+- name: check if /usr/local/mysql exists
+  find:
+    paths: "/usr/local/mysql"
+  register: result_mysqllink
+  tags:
+  - link
+- name: "link mysql to {{ link_destpath }}"
+  file:
+  args:
+    src: "{{ link_srcpath }}"
+    path: "{{ link_destpath }}"
+    state: link
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_user }}"
+  when: result_mysqllink.matched == 0
+  tags:
+  - link
+- name: copy mysql startup file
+  copy:
+  args:
+    src: "{{ mysql_path }}/support-files/mysql.server"
+    dest: "/etc/init.d/mysql{{ mysql_port }}"
+    remote_src: "True"
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_user }}"
+    mode: 0755
+- file:
+  args:
+    path: "{{ mysql_path }}/data"
+    state: directory
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_user }}"
+- file:
+  args:
+    path: "{{ mysql_path }}/logs"
+    state: directory
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_user }}"
+- copy:
+  args:
+    src: "{{ mysql_path }}/support-files/my-default.cnf"
+    dest: "{{ mysql_path }}/my.cnf"
+    remote_src: "True"
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_user }}"
+- name: check if /etc/my.cnf exists
+  find:
+    paths: /etc
+    patterns: "my.cnf"
+  register: check_mycnf
+  tags:
+  - link_mycnf
+- name: "link {{ link_mycnfsrc }} to {{ link_mycnfdest }}"
+  file:
+  args:
+    src: "{{ link_mycnfsrc }}"
+    path: "{{ link_mycnfdest }}"
+    state: link
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_user }}"
+  when: check_mycnf.matched == 0 or whether_force_link
+  tags:
+  - link_mycnf
+- name: Initialize database
+  shell: "scripts/mysql_install_db --user=mysql --datadir={{ mysql_path }}/data"
+  args:
+    chdir: "{{ mysql_path }}"
+- name: Recursive authorization
+  file:
+  args:
+    path: "{{ mysql_path }}"
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_user }}"
+    recurse: yes
+- file:
+  args:
+    src: "{{ link_destpath }}/bin/mysql_config"
+    path: /bin/mysql_config
+    state: link
+  become: true
+  become_user: root
+  become_method: sudo
+- file:
+  args:
+    src: "{{ link_destpath }}/bin/mysql"
+    path: /bin/mysql
+    state: link
+  become: true
+  become_user: root
+  become_method: sudo
+- file:
+  args:
+    src: "{{ link_destpath }}/bin/mysqldump"
+    path: /bin/mysqldump
+    state: link
+  become: true
+  become_user: root
+  become_method: sudo
+- include: mysql-env.yml
+  tags:
+  - env

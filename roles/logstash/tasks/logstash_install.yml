@@ -1,0 +1,24 @@
+---
+- file:
+  args:
+    path: "{{ logstash_path }}/{{ logstash_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    state: absent
+- unarchive: src={{ logstash_program.results[0].dest }} dest={{ logstash_path }} copy=no
+- file:
+  args:
+    src: "{{ logstash_path }}/{{ logstash_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ link_path }}"
+    state: link
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_user }}"
+- file:
+  args:
+    path: "{{ link_path }}/conf.d"
+    state: directory
+- file:
+  args:
+    path: "{{ logstash_path }}/{{ logstash_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    recurse: yes
+    state: directory
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_user }}"

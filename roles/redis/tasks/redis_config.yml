@@ -1,0 +1,41 @@
+---
+- name: provides redis config file
+  template: src={{ item }} dest={{ link_path }}/etc owner={{ redis_user }} group={{ redis_user }}
+  with_fileglob:
+  - ../templates/etc/*
+- name: provides redis init file
+  template: src={{ item }} dest=/etc/init.d/ owner=root group=root mode=0755
+  with_fileglob:
+  - ../templates/init/*
+- name: set /proc/sys/net/core/somaxconn for 511
+  shell: echo 511 > /proc/sys/net/core/somaxconn
+- name: set /sys/kernel/mm/transparent_hugepage/enabled for never
+  shell: echo never > /sys/kernel/mm/transparent_hugepage/enabled
+- name: set vm.overcommit_memory = 1
+  sysctl:
+    name: vm.overcommit_memory
+    value: 1
+    sysctl_file: /etc/sysctl.conf
+- blockinfile:
+    dest: /etc/rc.local
+    marker: "# {mark} ANSIBLE MANAGED BLOCK REDIS CORE"
+    block: |
+      echo 511 > /proc/sys/net/core/somaxconn
+      echo never > /sys/kernel/mm/transparent_hugepage/enabled
+- name: Modify system environment variables
+  blockinfile:
+    dest: /etc/security/limits.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK LIMITS ENV"
+    block: |
+      *        soft            nproc      65536
+      *        hard            nproc      65536
+      *        soft            nofile      65536
+      *        hard            nofile      65536
+- name: register limits.d file
+  command: ls /etc/security/limits.d
+  register: limitsF
+- name: set limits.d configuration file
+  replace:
+    dest: "/etc/security/limits.d/{{ limitsF.stdout_lines[0] }}"
+    regexp: '(^\*\s+soft\s+nproc\s+4096)'
+    replace: '#\1'

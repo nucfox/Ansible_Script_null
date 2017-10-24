@@ -1,0 +1,5 @@
+php_user: php
+source_path: /usr/local/src
+php_path: /usr/local
+link_path: /usr/local/php
+whether_repeat_install: false

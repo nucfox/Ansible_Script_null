@@ -1,0 +1,25 @@
+---
+- name: Installation base tools
+  yum: name={{ item }} state=latest
+  with_items:
+  - libselinux-python
+  - vim
+  - gcc
+  - gcc-c++
+- name: Modify system environment variables
+  blockinfile:
+    dest: /etc/security/limits.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK LIMITS ENV"
+    block: |
+      *        soft            nproc      65536
+      *        hard            nproc      65536
+      *        soft            nofile      65536
+      *        hard            nofile      65536
+- name: register limits.d file
+  command: ls /etc/security/limits.d
+  register: limitsF
+- name: set limits.d configuration file
+  replace:
+    dest: "/etc/security/limits.d/{{ limitsF.stdout_lines[0] }}"
+    regexp: '(^\*\s+soft\s+nproc\s+4096)'
+    replace: '#\1'

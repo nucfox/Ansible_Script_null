@@ -1,0 +1,5 @@
+- hosts: 10.100.57.46
+  gather_facts: True
+  remote_user: root
+  roles: 
+  - zabbix_agentd

@@ -1,0 +1,22 @@
+---
+kube_path: /usr/bin
+source_path: /usr/local/src
+config_path: /etc/kubernetes
+kubelet_working_path: /var/lib/kubelet
+kubeproxy_working_path: /var/lib/kube-proxy
+
+ca_ssl_path: /etc/kubernetes/ssl
+kubeP_ssl_path: "{{ config_path }}/ssl"
+
+MASTER_IP: "{{ NODES_MASTER_IP }}"
+NODE_IP: "{{ ansible_default_ipv4.address }}"
+
+CLUSTER_DNS_SVC_IP: 10.254.0.2
+CLUSTER_DNS_DOMAIN: cluster.local.
+
+SERVICE_CIDR: 10.254.0.0/16
+
+# Keep consistent with the server
+BOOTSTRAP_TOKEN: 41f7e4ba8b7be874fcff18bf5cf41a7c
+
+

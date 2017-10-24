@@ -1,0 +1,4 @@
+set     sendmail="/usr/local/bin/msmtp"
+set     from="{{ mail_server }}"
+set     realname="zabbix"
+set     copy=no

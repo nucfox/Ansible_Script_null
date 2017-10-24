@@ -1,0 +1,26 @@
+---
+- file:
+  args:
+    path: "{{ mongodb_path }}/{{ mongodb_program.results[0].dest | basename | regex_replace('^(.*).tgz$', '\\1') }}"
+    state: absent
+#- unarchive: src={{ mongodb_program.results[0].dest }} dest={{ mongodb_path }} copy=no
+- name: "installation"
+  command: gtar -xf "{{ mongodb_program.results[0].dest }}" -C "{{ mongodb_path }}"
+  args:
+    chdir: "{{ source_path }}"
+  ignore_errors: true
+- file:
+  args:
+    src: "{{ mongodb_path }}/{{ mongodb_program.results[0].dest | basename | regex_replace('^(.*).tgz$', '\\1') }}"
+    path: "{{ link_path }}"
+    state: link
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+- file:
+  args:
+    path: "{{ mongodb_path }}/{{ mongodb_program.results[0].dest | basename | regex_replace('^(.*).tgz$', '\\1') }}"
+    recurse: yes
+    state: directory
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+

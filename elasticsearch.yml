@@ -1,0 +1,4 @@
+- hosts: 10.100.58.15
+  remote_user: root
+  roles:
+  - elasticsearch

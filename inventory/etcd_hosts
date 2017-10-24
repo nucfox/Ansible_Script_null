@@ -1,0 +1,4 @@
+[etcd_cluster]
+10.100.57.54 ansible_ssh_user=root ansible_ssh_pass=FT%etrans@100154  NODE_NAME=etcd-host0
+10.100.57.55 ansible_ssh_user=root ansible_ssh_pass=FT%etrans@100155  NODE_NAME=etcd-host1
+10.100.57.56 ansible_ssh_user=root ansible_ssh_pass=FT%etrans@100156  NODE_NAME=etcd-host2

@@ -1,0 +1,20 @@
+---
+- file:
+  args:
+    path: "{{ elastic_path }}/{{ elastic_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    state: absent
+- unarchive: src={{ elastic_program.results[0].dest }} dest={{ elastic_path }} copy=no
+- file:
+  args:
+    src: "{{ elastic_path }}/{{ elastic_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ link_path }}"
+    state: link
+    owner: "{{ elastic_user }}"
+    group: "{{ elastic_user }}"
+- file:
+  args:
+    path: "{{ elastic_path }}/{{ elastic_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    recurse: yes
+    state: directory
+    owner: "{{ elastic_user }}"
+    group: "{{ elastic_user }}"

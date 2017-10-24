@@ -1,0 +1,43 @@
+testvar: "elastic_vehicle_{{ ansible_default_ipv4.address | regex_replace('^.*\\.(.*)\\.(.*)$', '\\1\\2') }}"
+testvar1: "{{ ansible_hostname }}"
+
+
+domain_definition:
+  domain:
+    cluster:
+    - name: "cluster1"
+    - name: "cluster2"
+    server:
+    - name: "server11"
+      cluster: "cluster1"
+      port: "8080"
+    - name: "server12"
+      cluster: "cluster1"
+      port: "8090"
+    - name: "server21"
+      cluster: "cluster2"
+      port: "9080"
+    - name: "server22"
+      cluster: "cluster2"
+      port: "9090"
+    library:
+    - name: "lib1"
+      target: "cluster1"
+    - name: "lib2"
+      target: "cluster2"
+
+Storage:
+  dir:
+    factory_root: /u06/test/etsuser/etsv_data/raw
+    factory_root_abnormal: /u06/test/etsuser/etsv_data/raw_abnormal
+    bulker_root: /u06/test/etsuser/etsv_data/raw-kafka
+    bulker_bakroot: /u06/test/etsuser/etsv_data/raw_bak-kafka
+
+Storage_dir1:
+  dir:
+    factory:
+      root: /u06/etsuser/etsv_data/raw
+      root_abnormal: /u06/etsuser/etsv_data/raw_abnormal
+    bulker:
+      root: /u06_data/etsuser/etsv_data/raw-kafka
+      bakroot: /u06_data/etsuser/etsv_data/raw_bak-kafka

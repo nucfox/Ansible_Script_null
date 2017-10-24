@@ -1,0 +1,66 @@
+- name: Installation dependencies NGINX
+  yum: name="{{ item }}" state="latest"
+  with_items: 
+  - pcre
+  - pcre-devel
+  - zlib
+  - zlib-devel
+  - redhat-lsb
+  - openssl-*
+  - openssl
+  - openssl-devel
+- name: creat nginx user
+  user: name={{ nginx_user }} append="yes"
+- name: copy nginx Source package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: nginx_program
+- file:
+  args:
+    path: "{{ source_path }}/{{ nginx_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    state: absent
+  when: whether_repeat_install
+- unarchive: src={{ nginx_program.results[0].dest }} dest={{ source_path }} copy=no
+  register: nginx_ua_program
+- name: install nginx_server
+  shell: "./configure --prefix={{ nginx_path }}/{{ nginx_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module --with-http_realip_module && make -j4 && make install"
+  args:
+    chdir: "{{ source_path }}/{{ nginx_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+  when: nginx_ua_program.skipped is undefined
+- name: check if /usr/local/nginx exists
+  find:
+    paths: "{{ link_path }}"
+  register: result_nginxlink
+- name: "link {{ nginx_path }}/{{ nginx_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} to {{ link_path }}"
+  file:
+  args:
+    src: "{{ nginx_path }}/{{ nginx_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ link_path }}"
+    state: link
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+  when: result_nginxlink.matched == 0
+- name: copy start-stop-daemon
+  copy: src="start-stop-daemon" dest="/usr/sbin" mode="0755"
+- name: provides init nginx file
+  template: src="nginxd" dest="/etc/init.d/" owner={{ nginx_user }} group={{ nginx_user }} mode="0755"
+- name: provides nginx config
+  template: 
+   src: nginx.conf 
+   dest: "{{ nginx_path }}/{{ nginx_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/conf"
+   owner: "{{ nginx_user }}"
+   group: "{{ nginx_user }}"
+- file:
+  args:
+    path: "{{ nginx_path }}/{{ nginx_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/conf/conf.d"
+    state: directory
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+- file:
+  args:
+    path: "{{ nginx_path }}/{{ nginx_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    state: directory
+    recurse: yes
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"

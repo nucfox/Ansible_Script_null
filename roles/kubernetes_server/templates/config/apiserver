@@ -1,0 +1,44 @@
+###
+# kubernetes system config
+#
+# The following values are used to configure the kube-apiserver
+#
+
+# default admission control policies
+KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota"
+
+KUBE_ADVERTISE_ADDRESS="--advertise-address={{ MASTER_IP }}"
+KUBE_BIND_ADDRESS="--bind-address={{ MASTER_IP }}"
+
+# The address on the local server to listen to.
+KUBE_INSECURE_BIND_ADDRESS="--insecure-bind-address={{ MASTER_IP }}"
+
+# security
+KUBE_AUTHORIZATION_MODE="--authorization-mode=RBAC"
+KUBE_RUNTIME_CONFIG="--runtime-config=rbac.authorization.k8s.io/v1alpha1"
+KUBE_KUBELET_HTTPS="--kubelet-https=true"
+KUBE_TOKEN_AUTH_FILE="--token-auth-file={{ config_path }}/token.csv"
+
+# Address range to use for services
+KUBE_SERVICE_CLUSTER_IP_RANGE="--service-cluster-ip-range={{ SERVICE_CIDR }}"
+KUBE_SERVICE_NODE_PORT_RANGE="--service-node-port-range={{ NODE_PORT_RANGE }}"
+
+# The port on the local server to listen on.
+# KUBE_API_PORT="--port=8080"
+
+# Port minions listen on
+# KUBELET_PORT="--kubelet-port=10250"
+
+KUBE_TLS_CERT_FILE="--tls-cert-file={{ kube_ssl_path }}/kubernetes.pem"
+KUBE_TLS_PRIVATE_KEY_FILE="--tls-private-key-file={{ kube_ssl_path }}/kubernetes-key.pem"
+KUBE_CLIENT_CA_FILE="--client-ca-file={{ ca_ssl_path }}/ca.pem"
+KUBE_SERVICE_ACCOUNT_KEY_FILE="--service-account-key-file={{ ca_ssl_path }}/ca-key.pem"
+KUBE_ETCD_CAFILE="--etcd-cafile={{ ca_ssl_path }}/ca.pem"
+KUBE_ETCD_CERTFILE="--etcd-certfile={{ kube_ssl_path }}/kubernetes.pem"
+KUBE_ETCD_KEYFILE="--etcd-keyfile={{ kube_ssl_path }}/kubernetes-key.pem"
+
+# Comma separated list of nodes in the etcd cluster
+KUBE_ETCD_SERVERS="--etcd-servers={{ ETCD_ENDPOINTS }}"
+
+# Add your own!
+KUBE_API_ARGS=""

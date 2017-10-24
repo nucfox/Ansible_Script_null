@@ -1,0 +1,29 @@
+---
+- name: Provide route configuration files
+  template:
+    src: config/mongod_route.conf
+    dest: "{{ storage_path }}/mongod_route.conf"
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+- name: Provide route startup script for linux 6
+  template:
+    src: init.d/mongod_route
+    dest: "/etc/init.d/mongod_route"
+    owner: root
+    group: root
+    mode: 0750
+  become: true
+  become_user: root
+  become_method: sudo
+  when: ansible_distribution_major_version == "6"
+- name: Provide route startup script for linux 7
+  template:
+    src: systemd/system/mongod_route.service
+    dest: "/usr/lib/systemd/system/mongod_route.service"
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+  become_user: root
+  become_method: sudo
+  when: ansible_distribution_major_version == "7"

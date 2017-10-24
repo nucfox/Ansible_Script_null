@@ -1,0 +1,37 @@
+---
+- name: create configsvr data directory
+  file:
+    path: "{{ storage_path }}/data/configsvr"
+    recurse: yes
+    state: directory
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+- name: Provide configsvr configuration files
+  template:
+    src: config/mongod_configsvr.conf
+    dest: "{{ storage_path }}/mongod_configsvr.conf"
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+- name: Provide configsvr startup script for linux 6
+  template:
+    src: init.d/mongod_configsvr
+    dest: "/etc/init.d/mongod_configsvr"
+    owner: root
+    group: root
+    mode: 0750
+  become: true
+  become_user: root
+  become_method: sudo
+  when: ansible_distribution_major_version == "6"
+- name: Provide configsvr startup script for linux 7
+  template:
+    src: systemd/system/mongod_configsvr.service
+    dest: "/usr/lib/systemd/system/mongod_configsvr.service"
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+  become_user: root
+  become_method: sudo
+  when: ansible_distribution_major_version == "7"
+

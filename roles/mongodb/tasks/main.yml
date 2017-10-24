@@ -1,0 +1,22 @@
+---
+- name: "creat {{ mongodb_user }} user"
+  user: name={{ mongodb_user }} append=yes shell=/bin/false createhome=no
+- name: copy mongodb for package linux 6
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/6/*.tgz
+  register: mongodb_program
+  when: ansible_distribution_major_version == "6"
+- name: copy mongodb package for linux 7
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/7/*.tgz
+  register: mongodb_program
+  when: ansible_distribution_major_version == "7"
+- name: "Verify that the directory exists"
+  command: ls "{{ link_path }}"
+  register: lslink
+  ignore_errors: true
+- include: mongodb_install.yml
+  when: whether_repeat_install or lslink|failed
+- include: mongodb_config.yml

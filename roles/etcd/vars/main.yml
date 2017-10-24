@@ -1,0 +1,12 @@
+---
+etcd_user: etcd
+etcd_path: /usr/bin
+source_path: /usr/local/src
+config_path: /etc/etcd
+data_path: /var/lib/etcd
+ca_ssl_path: /etc/kubernetes/ssl
+etcd_ssl_path: "{{ config_path }}/ssl"
+
+NODE_IP: "{{ ansible_default_ipv4.address }}"
+ETCD_NODES: etcd-host0=https://10.100.57.54:2380,etcd-host1=https://10.100.57.55:2380,etcd-host2=https://10.100.57.56:2380
+CLUSTER_TOKEN: etcd-cluster-0

@@ -1,0 +1,56 @@
+---
+- name: copy flannel package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: flannel_program
+- unarchive: src={{ flannel_program.results[0].dest }} dest={{ source_path }} copy=no
+- name: install flannel
+  copy:
+    src: "{{ source_path }}/flanneld"
+    dest: "{{ flannel_path }}"
+    mode: 0755
+    remote_src: True
+- copy:
+    src: "{{ source_path }}/mk-docker-opts.sh"
+    dest: "{{ flannel_path }}"
+    mode: 0755
+    remote_src: True
+
+- file:
+  args:
+    path: "{{ flannel_ssl_path }}"
+    state: directory
+- file:
+  args:
+    path: "{{ ca_ssl_path }}"
+    state: directory
+
+- name: copy flannel pem
+  copy: src={{ item }} dest={{ flannel_ssl_path }}
+  with_fileglob:
+  - pem/flanneld*pem
+
+- name: copy ca pem
+  copy: src={{ item }} dest={{ ca_ssl_path }}
+  with_fileglob:
+  - pem/ca*pem
+
+- name: get etcd cluster Pod net INFO
+  shell: "etcdctl --endpoints={{ ETCD_ENDPOINTS }} --ca-file={{ ca_ssl_path }}/ca.pem --cert-file={{ flannel_ssl_path }}/flanneld.pem --key-file={{ flannel_ssl_path }}/flanneld-key.pem get {{ FLANNEL_ETCD_PREFIX }}/config"
+  register: flannel_podnet
+  ignore_errors: true
+#- debug:
+#    var: flannel_podnet
+
+- name: set etcd cluster Pod net INFO
+  shell: "etcdctl --endpoints={{ ETCD_ENDPOINTS }} --ca-file={{ ca_ssl_path }}/ca.pem --cert-file={{ flannel_ssl_path }}/flanneld.pem --key-file={{ flannel_ssl_path }}/flanneld-key.pem set {{ FLANNEL_ETCD_PREFIX }}/config \'{\"Network\": \"{{ CLUSTER_CIDR }}\", \"SubnetLen\": 24, \"Backend\": {\"Type\": \"vxlan\"}}\'"
+  run_once: true
+  when: flannel_podnet|failed
+
+- name: copy systemd file
+  template: src=systemd/flanneld.service dest=/usr/lib/systemd/system owner=root group=root mode=0644
+  become: true
+  become_user: root
+  become_method: sudo
+  notify: Start flanneld

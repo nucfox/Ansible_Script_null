@@ -1,0 +1,13 @@
+--- 
+name: {{ filebeat_ip }}
+tags: ["test"]
+filebeat.idle_timeout: 5s
+filebeat.publish_async: false
+filebeat.spool_size: 2048
+filebeat.config_dir: "conf.d"
+output.logstash: 
+  enabled: true
+  hosts: [{{ loadbalance_ip }}]
+  loadbalance: true
+  index: filebeat
+

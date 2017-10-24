@@ -1,0 +1,10 @@
+nginx_user: nginx
+
+source_path: /usr/local/src
+link_path: /usr/local/nginx
+
+whether_repeat_install: true
+
+nginx_path: /usr/local
+
+

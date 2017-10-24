@@ -1,0 +1,27 @@
+---
+#- name: copy logstash plugin
+#  copy: src="plugin" dest="/usr/local/src/"
+- file:
+  args:
+    path: "/usr/local/src/plugin/dir"
+    state: directory
+- name: decompression plugin
+  unarchive: src={{ item }} dest=/usr/local/src/plugin/dir
+  with_fileglob:
+  - plugin/*
+- name: register gemspec dir var
+  shell: "ls /usr/local/src/plugin/dir"
+  register: gemspec_dir
+- name: register gemspec name var
+  shell: "ls /usr/local/src/plugin/dir/{{ item }} | grep \".*.gemspec\" | awk -F. '{print $1}'"
+  with_items: "{{ gemspec_dir.stdout_lines }}"
+  register: gemspec_name
+- name: copy plugin to logstash dir
+  shell: "cp -r /usr/local/src/plugin/dir/* {{ link_path }}/vendor/bundle/jruby/1.9/gems"
+#- debug:
+#    var: gemspec_name
+- name: modify logstash Gemfile
+  lineinfile:
+    name: "{{ link_path }}/Gemfile"
+    line: "gem \"{{ item.stdout }}\", :path => \"vendor/bundle/jruby/1.9/gems/{{ item.item }}\""
+  with_items: "{{ gemspec_name.results }}"

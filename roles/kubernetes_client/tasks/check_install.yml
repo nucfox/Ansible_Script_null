@@ -1,0 +1,8 @@
+---
+- name: Check whether the installation of kubectl
+  command: "{{ kube_path }}/kubectl"
+  register: result
+  ignore_errors: true
+- include: install.yml
+  static: no
+  when: result|failed

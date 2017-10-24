@@ -1,0 +1,12 @@
+- name: Add ssh environment variables
+  blockinfile:
+    dest: /etc/ssh/sshd_config
+    marker: "# {mark} ANSIBLE MANAGED BLOCK SSH ENV"
+    block: |
+      Protocol 2
+      PermitRootLogin  yes
+      UsePAM  yes
+      MaxSessions 5
+      MaxStartups 5
+  notify:
+  - restart sshd

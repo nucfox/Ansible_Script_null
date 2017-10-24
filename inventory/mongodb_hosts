@@ -1,0 +1,71 @@
+#
+[mongodA]
+10.100.58.44
+[mongodB]
+10.100.58.45
+[mongodC]
+10.100.58.46
+
+[mongod_replica:children]
+mongodA
+mongodB
+mongodC
+
+
+[mongodA:vars]
+replica_name=replica_test1
+bind_ip="{{ ansible_default_ipv4.address }}"
+bind_port=27017
+cluste_method=replica
+
+[mongodB:vars]
+replica_name=replica_test1
+bind_ip="{{ ansible_default_ipv4.address }}"
+bind_port=27017
+cluste_method=replica
+
+[mongodC:vars]
+replica_name=replica_test1
+bind_ip="{{ ansible_default_ipv4.address }}"
+bind_port=27017
+cluste_method=replica
+
+
+#[mongodA:vars]
+#bind_ip="{{ ansible_default_ipv4.address }}"
+#cluste_method=shard
+#shard_port_number="[[27017,27018,27019],[1, 2, 3]]"
+#configsvr_port=27016
+#configsvr_ip_port="10.100.58.44:27016,10.100.58.45:27016,10.100.58.46:27016"
+#route_port=27015
+#role_shardsvr=true
+#role_configsvr=true
+#route_configdb=true
+#configsvr_name=cfgReplSet_test
+#shard_name=shardReplSet_test
+#
+#[mongodB:vars]
+#bind_ip="{{ ansible_default_ipv4.address }}"
+#cluste_method=shard
+#shard_port_number="[[27017,27018,27019],[1, 2, 3]]"
+#configsvr_port=27016
+#configsvr_ip_port="10.100.58.44:27016,10.100.58.45:27016,10.100.58.46:27016"
+#route_port=27015
+#role_shardsvr=true
+#role_configsvr=true
+#route_configdb=true
+#configsvr_name=cfgReplSet_test
+#shard_name=shardReplSet_test
+#
+#[mongodC:vars]
+#bind_ip="{{ ansible_default_ipv4.address }}"
+#cluste_method=shard
+#shard_port_number="[[27017,27018,27019],[1, 2, 3]]"
+#configsvr_port=27016
+#configsvr_ip_port="10.100.58.44:27016,10.100.58.45:27016,10.100.58.46:27016"
+#route_port=27015
+#role_shardsvr=true
+#role_configsvr=true
+#route_configdb=true
+#configsvr_name=cfgReplSet_test
+#shard_name=shardReplSet_test

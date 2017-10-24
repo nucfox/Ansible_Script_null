@@ -1,0 +1,46 @@
+---
+- name: Stop controller-manager
+  systemd:
+    name: kube-controller-manager
+    state: stopped
+- name: Stop scheduler
+  systemd:
+    name: kube-scheduler
+    state: stopped
+- name: Stop apiserver
+  systemd:
+    name: kube-apiserver
+    state: stopped
+
+- name: remove kube-apiserver
+  file:
+    path: "{{ kube_path }}/kube-apiserver"
+    state: absent
+- file:
+    path: "{{ config_path }}/apiserver"
+    state: absent
+- file:
+    path: /usr/lib/systemd/system/kube-apiserver.service
+    state: absent
+
+- name: remove kube-controller-manager
+  file:
+    path: "{{ kube_path }}/kube-controller-manager"
+    state: absent
+- file:
+    path: "{{ config_path }}/controller-manager"
+    state: absent
+- file:
+    path: /usr/lib/systemd/system/kube-controller-manager.service
+    state: absent
+
+- name: remove kube-scheduler
+  file:
+    path: "{{ kube_path }}/kube-scheduler"
+    state: absent
+- file:
+    path: "{{ config_path }}/scheduler"
+    state: absent
+- file:
+    path: /usr/lib/systemd/system/kube-scheduler.service
+    state: absent

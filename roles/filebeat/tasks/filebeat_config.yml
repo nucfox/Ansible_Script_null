@@ -1,0 +1,9 @@
+---
+- name: provides filebeat config file
+  template: src=filebeat.yml dest={{ link_path }}
+- name: provides deamon file
+  copy: src=filebeat-god dest={{ link_path }} mode=0755
+- name: provides init file
+  template: src=filebeat dest=/etc/init.d/ mode=0755
+- name: copy filebeat.template.json
+  copy: src=filebeat.template.json dest={{ link_path }}

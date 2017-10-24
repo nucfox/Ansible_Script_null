@@ -1,0 +1,9 @@
+- hosts: 10.100.57.54
+  remote_user: root
+  roles:
+  - kubernetes_client
+  vars:
+    kubeC_stated: install
+  vars_files:
+  - global_vars/kubernetes.yml
+# install or remove

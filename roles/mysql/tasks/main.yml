@@ -1,0 +1,3 @@
+---
+- include: single.yml
+  when: select_single_multi == "single"

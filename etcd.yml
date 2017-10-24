@@ -1,0 +1,9 @@
+- hosts: [10.100.57.55,10.100.57.56]
+  remote_user: root
+  roles:
+  - etcd
+  vars:
+    etcd_stated: install
+  vars_files:
+  - global_vars/kubernetes.yml
+# install or remove

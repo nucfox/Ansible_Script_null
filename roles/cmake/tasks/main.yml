@@ -1,0 +1,7 @@
+---
+- name: Check whether the installation of CMAKE
+  command: /usr/local/bin/cmake
+  register: result
+  ignore_errors: true
+- include: install.yml
+  when: result|failed

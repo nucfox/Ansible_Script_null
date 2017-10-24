@@ -1,0 +1,7 @@
+---
+- include: check_install.yml
+  static: no
+  when: etcd_stated == "install"
+- include: remove.yml
+  static: no
+  when: etcd_stated == "remove"

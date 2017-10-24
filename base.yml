@@ -1,0 +1,5 @@
+- hosts: misc
+  remote_user: root
+  roles:
+  - base
+

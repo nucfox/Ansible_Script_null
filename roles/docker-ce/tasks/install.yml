@@ -1,0 +1,51 @@
+---
+- name: stop Docker
+  systemd:
+    name: docker
+    state: stopped
+  ignore_errors: True
+
+- name: Uninstall old versions of Docker
+  yum: name={{ item }} state=removed
+  with_items:
+  - docker
+  - docker-common
+  - docker-selinux
+  - docker-engine
+- name: Install required packages
+  yum: name={{ item }} state=latest
+  with_items:
+  - yum-utils
+  - device-mapper-persistent-data
+  - lvm2
+- name: SET UP THE REPOSITORY
+  shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+- name: Update the yum package index
+  shell: yum makecache fast
+- name: Install the latest version of Docker CE
+  yum: name={{ DOCKER_VERSION }} state=present
+- name: Create the docker group
+  group:
+    name: docker
+    state: present
+- name: create docker etc dir
+  file:
+    path: /etc/docker
+    state: directory
+
+- name: copy systemd docker.service file
+  template: src=docker.service dest=/usr/lib/systemd/system owner=root group=root mode=0644
+  become: true
+  become_user: root
+  become_method: sudo
+
+- name: clear iptables rules and chains
+  shell: "iptables -P INPUT ACCEPT && iptables -F && iptables -X && iptables -F -t nat && iptables -X -t nat"
+  become: true
+  become_user: root
+  become_method: sudo
+
+- name: provides daemon.json file
+  template: src=daemon.json dest=/etc/docker
+  notify:
+  - Start Docker

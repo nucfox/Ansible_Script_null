@@ -1,0 +1,16 @@
+---
+- name: Add java environment variables
+  blockinfile:
+    dest: /etc/profile
+    marker: "# {mark} ANSIBLE MANAGED BLOCK JAVA ENV"
+    block: |
+      JAVA_HOME=/usr/java/default
+      PATH=$JAVA_HOME/bin:$PATH:$HOME/bin
+      CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar
+      export PATH JAVA_HOME CLASSPATH CATALINA_HOME
+- name: alternatives link created
+  alternatives:
+    name: java
+    link: /usr/bin/java
+    path: /usr/java/default/bin/java
+    priority: 50

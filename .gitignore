@@ -1,0 +1,6 @@
+# RPM
+*.rpm
+*.retry
+*.tar.gz
+*.pem
+*.csr

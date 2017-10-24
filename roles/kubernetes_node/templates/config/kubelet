@@ -1,0 +1,26 @@
+###
+# kubernetes kubelet (minion) config
+
+# The address for the info server to serve on (set to 0.0.0.0 or "" for all interfaces)
+KUBELET_ADDRESS="--address={{ NODE_IP }}"
+
+# The port for the info server to serve on
+# KUBELET_PORT="--port=10250"
+
+# You may leave this blank to use the actual hostname
+KUBELET_HOSTNAME="--hostname-override={{ NODE_IP }}"
+
+# location of the api-server
+KUBELET_API_SERVER="--api-servers=http://{{ MASTER_IP }}:8080"
+
+KUBELET_CLUSTER_DNS="--cluster_dns={{ CLUSTER_DNS_SVC_IP }}"
+KUBELET_CLUSTER_DOMAIN="--cluster_domain={{ CLUSTER_DNS_DOMAIN }}"
+
+#KUBELET_EXPERIMENTAL_BOOTSTRAP_KUBECONFIG="--experimental-bootstrap-kubeconfig={{ config_path }}/bootstrap.kubeconfig"
+
+
+# pod infrastructure container
+#KUBELET_POD_INFRA_CONTAINER="--pod-infra-container-image=registry.access.redhat.com/rhel7/pod-infrastructure:latest"
+
+# Add your own!
+KUBELET_ARGS=""

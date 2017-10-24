@@ -1,0 +1,147 @@
+#!/bin/bash
+#chkconfig: 2345 55 25
+#description: Starts,stops and restart the redis-server
+#Ver:1.1  
+#Write by ND chengh(200808)
+#usage: ./script_name -p [port] {start|stop|status|restart}
+
+#
+# Source function library.
+#
+if [ -f /etc/rc.d/init.d/functions ]; then
+    . /etc/rc.d/init.d/functions
+fi
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check networking is up.
+[ "$NETWORKING" = "no" ] && exit 0
+
+retval=0
+REDIS_USER="redis"
+REDIS_GROUP="redis"
+REDIS_HOME="{{ link_path }}"
+BASE_REDIS_PORT=6379
+DEFAULT_REDIS_PORT=${BASE_REDIS_PORT}
+#PID=
+
+#---------------------------
+#if [ "$1" = "-p" ]; then
+#    DEFAULT_REDIS_PORT=$2
+#    shift 2
+#fi
+#---------------------------
+
+TEST_REDIS_CONFIG="$REDIS_HOME/etc/redis_${DEFAULT_REDIS_PORT}.conf"
+[ ! -f ${TEST_REDIS_CONFIG} ] && echo ${REDIS_HOME}/etc/redis_${DEFAULT_REDIS_PORT}.conf not found && exit 1
+
+#----------------------------------------------------------------------------------
+#TEST_REDIS_CONFIG="$REDIS_HOME/etc/redis_${DEFAULT_REDIS_PORT}.conf"
+#[ ! -f ${TEST_REDIS_CONFIG} ] && DEFAULT_REDIS_PORT=${BASE_REDIS_PORT}
+#TEST_REDIS_CONFIG="$REDIS_HOME/etc/redis_${DEFAULT_REDIS_PORT}.conf"
+#[ ! -f ${TEST_REDIS_CONFIG} ] && TEST_REDIS_CONFIG="$REDIS_HOME/etc/redis.conf"
+#---------------------------------------------------------------------------------
+
+REDIS_PORT=${DEFAULT_REDIS_PORT}
+REDIS_CONFIG=${TEST_REDIS_CONFIG}
+#PID_DIR="$REDIS_HOME/var/run"
+
+_exec="$REDIS_HOME/bin/redis-server"
+prog="redis-server"
+#pidfile="${PID_DIR}/${prog}_${REDIS_PORT}.pid"
+pidfile=`awk '/^[[:blank:]]*pidfile/{print $2}' $REDIS_CONFIG | tr -d "[[:blank:]]" | awk -F'#' '{print $1}'`
+PID_DIR=$(dirname $pidfile)
+
+
+LOCK_DIR=${REDIS_HOME}/var/lock/subsys
+lockfile=${LOCK_DIR}/${prog}_${REDIS_PORT}
+
+
+if [ ! -x "$_exec" ]; then
+    echo "The redis startup script does not exists or it is not executable, tried: $_exec"
+    exit 1
+fi
+
+start() {
+    [ -x $_exec ] || exit 5
+
+    if [ -n "$LOCK_DIR" ] && [ ! -e "$LOCK_DIR" ]; then
+        mkdir -p "$LOCK_DIR" && chown "$REDIS_USER":"$REDIS_GROUP" "$LOCK_DIR"
+    fi
+    # Ensure that the PID_DIR exists (it is cleaned at OS startup time)
+    if [ -n "$PID_DIR" ] && [ ! -e "$PID_DIR" ]; then
+	mkdir -p "$PID_DIR" && chown "$REDIS_USER":"$REDIS_GROUP" "$PID_DIR"
+    fi
+
+    cd $REDIS_HOME
+    echo -n $"Starting $prog: "
+    daemon --user $REDIS_USER --pidfile $pidfile $_exec $REDIS_CONFIG &
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && touch $lockfile
+    return $retval
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc -p $pidfile $prog
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    restart
+}
+
+force_reload() {
+    restart
+}
+
+rh_status() {
+    # run checks to determine if the service is running or use generic status
+    status -p $pidfile $prog
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    reload)
+        rh_status_q || exit 7
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        exit 2
+esac
+exit $?

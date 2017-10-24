@@ -1,0 +1,14 @@
+---
+- name: "creat {{ kibana_user }} user"
+  user: name={{ kibana_user }} append=yes
+- name: copy elastic package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: kibana_program
+- command: ls "{{ link_path }}"
+  register: lslink
+  ignore_errors: true
+- include: kibana_install.yml
+  when: whether_repeat_install or lslink|failed
+- include: kibana_config.yml

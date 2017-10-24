@@ -1,0 +1,10 @@
+---
+- include: shardsvr.yml
+  static: no
+  when: role_shardsvr
+- include: configsvr.yml
+  static: no
+  when: role_configsvr
+- include: route.yml
+  static: no
+  when: route_configdb

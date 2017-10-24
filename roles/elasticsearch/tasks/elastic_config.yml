@@ -1,0 +1,34 @@
+---
+- name: provides elasticsearch systemd file
+  template: src=systemd/elasticsearch.service dest=/usr/lib/systemd/system owner=root group=root mode=0644
+  become: true
+  become_user: root
+  become_method: sudo
+  when: ansible_distribution_major_version == "7"
+- name: provides elasticsearch init.d file
+  template: src=init/elasticsearch dest=/etc/init.d owner=root group=root mode=0750
+  become: true
+  become_user: root
+  become_method: sudo
+  when: ansible_distribution_major_version == "6"
+- name: provides elasticsearch sysconfig file
+  template: src=sysconfig/elasticsearch dest=/etc/sysconfig owner=root group=root mode=0660
+  become: true
+  become_user: root
+  become_method: sudo
+- name: provides elastic config file
+  template: src=elasticsearch.yml dest={{ link_path }}/config owner={{ elastic_user }} group={{ elastic_user }}
+  notify:
+  - start elasticsearch
+- name: vm.max_map_count=262144
+  command: "sysctl -w vm.max_map_count=262144"
+  become: true
+  become_user: root
+  become_method: sudo
+- lineinfile:
+    name: /etc/sysctl.conf
+    regexp: '^vm.max_map_count'
+    line: 'vm.max_map_count = 262144'
+  become: true
+  become_user: root
+  become_method: sudo

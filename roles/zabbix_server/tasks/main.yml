@@ -1,0 +1,188 @@
+- name: Installation dependencies ZABBIX
+  yum: name="{{ item }}" state="latest"
+  with_items: 
+  - net-snmp-devel
+  - gcc
+  - python-devel
+- name: creat zabbix user
+  user: name={{ zabbix_user }} append="yes"
+- name: copy zabbix Source package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: zabbix_program
+- file:
+  args:
+    path: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    state: absent
+  when: whether_repeat_install
+- unarchive: src={{ zabbix_program.results[0].dest }} dest={{ source_path }} copy=no
+  register: zabbix_ua_program
+- name: install zabbix_server
+  shell: "./configure --prefix={{ zabbix_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --enable-server --enable-agent --with-mysql --with-net-snmp --with-libcurl --with-libxml2 --enable-java --with-mysql={{ mysql_path }}/bin/mysql_config  && make -j4 && make install"
+  args:
+    chdir: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+  when: zabbix_ua_program.skipped is undefined
+- name: Upgrade pip
+  easy_install:
+    name: pip
+    state: latest
+- file:
+  args:
+    src: "{{ mysql_path }}/bin/mysql_config"
+    path: /bin/mysql_config
+    state: link
+  become: true
+  become_user: root
+  become_method: sudo
+- file:
+  args:
+    src: "{{ mysql_path }}/bin/mysql"
+    path: /bin/mysql
+    state: link
+  become: true
+  become_user: root
+  become_method: sudo
+- file:
+  args:
+    src: "{{ mysql_path }}/bin/mysqldump"
+    path: /bin/mysqldump
+    state: link
+  become: true
+  become_user: root
+  become_method: sudo
+- name: install the python mysqldb module
+  pip:
+    name: MySQL-python
+    state: latest
+  tags:
+  - pip
+- name: config zabbix for mysql
+  mysql_user:
+    name: zabbix
+    password: "{{ mysql_zabbix_passwd }}"
+    host: "{{ mysql_zabbix_ip }}"
+    priv: 'zabbix.*:ALL/mysql.user:SELECT'
+    login_host: "{{ mysql_ip }}"
+    login_password: "{{ mysql_passwd }}"
+    login_user: "{{ mysql_user }}"
+    login_port: "{{ mysql_port }}"
+    encrypted: "{{ encrypted }}"
+    state: present
+- name: create zabbix database
+  mysql_db:
+    name: zabbix
+    encoding: utf8
+    state: present
+    login_host: "{{ mysql_ip }}"
+    login_password: "{{ mysql_passwd }}"
+    login_user: "{{ mysql_user }}"
+    login_port: "{{ mysql_port }}"
+  register: mysql_zabbix
+- name: Initialize zabbix database
+  mysql_db:
+    name: zabbix
+    target: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/database/mysql/schema.sql"
+    encoding: utf8
+    login_host: "{{ mysql_ip }}"
+    login_password: "{{ mysql_passwd }}"
+    login_user: "{{ mysql_user }}"
+    login_port: "{{ mysql_port }}"
+    state: import
+  when: mysql_zabbix.changed
+- mysql_db:
+    name: zabbix
+    state: import
+    encoding: utf8
+    target: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/database/mysql/images.sql"
+    login_host: "{{ mysql_ip }}"
+    login_password: "{{ mysql_passwd }}"
+    login_user: "{{ mysql_user }}"
+    login_port: "{{ mysql_port }}"
+  when: mysql_zabbix.changed
+- mysql_db:
+    name: zabbix
+    state: import
+    encoding: utf8
+    target: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/database/mysql/data.sql"
+    login_host: "{{ mysql_ip }}"
+    login_password: "{{ mysql_passwd }}"
+    login_user: "{{ mysql_user }}"
+    login_port: "{{ mysql_port }}"
+  when: mysql_zabbix.changed
+- file:
+  args:
+    src: "{{ zabbix_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ link_path }}"
+    state: link
+    owner: "{{ zabbix_user }}"
+    group: "{{ zabbix_user }}"
+- file:
+  args:
+    path: "{{ link_path }}/alertscripts"
+    state: directory
+- name: copy zabbix alarm.sh
+  copy: src="alarm.sh" dest={{ link_path }}/alertscripts owner={{ zabbix_user }} group={{ zabbix_user }} mode="0755"
+- name: copy zabbix server init
+  copy:
+    src: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/misc/init.d/fedora/core/zabbix_server"
+    dest: "/etc/init.d/"
+    remote_src: true
+    owner: "{{ zabbix_user }}"
+    group: "{{ zabbix_user }}"
+    mode: 0755
+- lineinfile:
+    dest: "/etc/init.d/zabbix_server"
+    state: present
+    regexp: 'BASEDIR='
+    line: "BASEDIR={{ link_path }}"
+- file: 
+  args:
+    path: "{{ zabbix_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    recurse: yes
+    state: directory
+    owner: "{{ zabbix_user }}"
+    group: "{{ zabbix_user }}"
+- file:
+  args:
+    path: "{{ nginx_path }}/www/site"
+    recurse: yes
+    state: directory
+    owner: "{{ zabbix_user }}"
+    group: "{{ zabbix_user }}"
+- name: copy zabbix web site
+  shell: "cp -r {{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/frontends/php {{ nginx_path }}/www/site/zabbix && chown -R {{ zabbix_user }}. {{ nginx_path }}/www/site/zabbix"
+#- copy:
+#    src: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/frontends/php"
+#    dest: "{{ nginx_path }}/www/site"
+#    remote_src: true
+#    owner: "{{ zabbix_user }}"
+#    group: "{{ zabbix_user }}"
+#  tags:
+#  - debug
+- replace:
+    dest: "{{ nginx_path }}/www/site/zabbix/include/defines.inc.php"
+    regexp: 'DejaVuSans'
+    replace: 'simkai'
+- name: copy simkai.ttf
+  copy: src="simkai.ttf" dest="{{ nginx_path }}/www/site/zabbix/fonts" owner={{ zabbix_user }} group={{ zabbix_user }}
+- name: configure ZABBIX site
+  template: src="zabbix.conf.php" dest="{{ nginx_path }}/www/site/zabbix/conf" owner={{ zabbix_user }} group={{ zabbix_user }}
+- file:
+  args:
+    path: "{{ nginx_config_path }}"
+    state: directory
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+- name: provide zabbix nginx config
+  template: src=zabbix.conf dest={{ nginx_config_path }}/ owner={{ nginx_user }} group={{ nginx_user }}
+  notify:
+  - start nginx_server
+  tags:
+  - nginx
+- name: provides zabbix_server.conf
+  template: src="zabbix_server.conf" dest="{{ link_path }}/etc/" owner={{ zabbix_user }} group={{ zabbix_user }}
+  tags:
+  - zabbix_server.conf
+  notify:
+  - start zabbix_server

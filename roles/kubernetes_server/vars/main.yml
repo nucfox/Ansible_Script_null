@@ -1,0 +1,21 @@
+---
+kube_user: kube
+kube_path: /usr/bin
+source_path: /usr/local/src
+config_path: /etc/kubernetes
+log_path: /var/log/kubernetes
+
+ca_ssl_path: /etc/kubernetes/ssl
+kube_ssl_path: "{{ config_path }}/ssl"
+
+MASTER_IP: "{{ SERVER_MASTER_IP }}"
+ETCD_ENDPOINTS: https://10.100.57.54:2379,https://10.100.57.55:2379,https://10.100.57.56:2379
+SERVICE_CIDR: 10.254.0.0/16
+NODE_PORT_RANGE: 8400-9000
+
+# head -c 16 /dev/urandom | od -An -t x | tr -d ' '
+BOOTSTRAP_TOKEN: 41f7e4ba8b7be874fcff18bf5cf41a7c
+
+
+CLUSTER_NAME: kubernetes
+CLUSTER_CIDR: 172.30.0.0/16

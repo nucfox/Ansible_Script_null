@@ -1,0 +1,30 @@
+---
+- name: provides kibana systemd file
+  template: src=systemd/kibana.service dest=/usr/lib/systemd/system owner=root group=root mode=0644
+  become: true
+  become_user: root
+  become_method: sudo
+  when: ansible_distribution_major_version == "7"
+- name: provides kibana init.d file
+  template: src=init/kibana dest=/etc/init.d owner=root group=root mode=0750
+  become: true
+  become_user: root
+  become_method: sudo
+  when: ansible_distribution_major_version == "6"
+- name: provides kibana sysconfig file
+  template: src=default/kibana dest=/etc/sysconfig owner=root group=root mode=0664
+  become: true
+  become_user: root
+  become_method: sudo
+  when: ansible_distribution_major_version == "6"
+- name: provides kibana default file
+  template: src=default/kibana dest=/etc/default owner=root group=root mode=0664
+  become: true
+  become_user: root
+  become_method: sudo
+  when: ansible_distribution_major_version == "7"
+- name: provides kibana config file
+  template: src=kibana.yml dest={{ link_path }}/config owner={{ kibana_user }} group={{ kibana_user }}
+  notify:
+  - start kibana
+

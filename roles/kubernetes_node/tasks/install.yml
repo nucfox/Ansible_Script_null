@@ -1,0 +1,129 @@
+---
+- name: copy kube node package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: kube_program
+- unarchive: src={{ kube_program.results[0].dest }} dest={{ source_path }} copy=no
+- name: install kubelet
+  copy:
+    src: "{{ source_path }}/kubernetes/node/bin/kubelet"
+    dest: "{{ kube_path }}"
+    mode: 0755
+    remote_src: True
+- name: install kube-proxy
+  copy:
+    src: "{{ source_path }}/kubernetes/node/bin/kube-proxy"
+    dest: "{{ kube_path }}"
+    mode: 0755
+    remote_src: True
+
+- name: create config dir
+  file:
+  args:
+    path: "{{ config_path }}"
+    state: directory
+
+- name: create kubelet working dir
+  file:
+  args:
+    path: "{{ kubelet_working_path }}"
+    state: directory
+
+- name: create kube-proxy working dir
+  file:
+  args:
+    path: "{{ kubeproxy_working_path }}"
+    state: directory
+
+- file:
+  args:
+    path: "{{ ca_ssl_path }}"
+    state: directory
+- file:
+  args:
+    path: "{{ kubeP_ssl_path }}"
+    state: directory
+
+- name: copy ca pem
+  copy: src={{ item }} dest={{ ca_ssl_path }}
+  with_fileglob:
+  - pem/ca*pem
+- name: copy kube-proxy pem
+  copy: src={{ item }} dest={{ kubeP_ssl_path }}
+  with_fileglob:
+  - pem/kube-proxy*pem
+
+- name: kubectl create clusterrolebinding
+  shell: kubectl create clusterrolebinding kubelet-bootstrap --clusterrole=system:node-bootstrapper --user=kubelet-bootstrap
+  run_once: true
+  ignore_errors: true
+
+- name: set bootstrap kubeconfig file
+  shell: kubectl config set-cluster kubernetes --certificate-authority={{ ca_ssl_path }}/ca.pem --embed-certs=true --server=https://{{ MASTER_IP }}:6443 --kubeconfig={{ config_path }}/bootstrap.kubeconfig
+- shell: kubectl config set-credentials kubelet-bootstrap --token={{ BOOTSTRAP_TOKEN }} --kubeconfig={{ config_path }}/bootstrap.kubeconfig
+- shell: kubectl config set-context default --cluster=kubernetes --user=kubelet-bootstrap --kubeconfig={{ config_path }}/bootstrap.kubeconfig
+- shell: kubectl config use-context default --kubeconfig={{ config_path }}/bootstrap.kubeconfig
+
+- name: set kube-proxy kubeconfig file
+  shell: kubectl config set-cluster kubernetes --certificate-authority={{ ca_ssl_path }}/ca.pem --embed-certs=true --server=https://{{ MASTER_IP }}:6443 --kubeconfig={{ config_path }}/kube-proxy.kubeconfig
+- shell: kubectl config set-credentials kube-proxy --client-certificate={{ kubeP_ssl_path }}/kube-proxy.pem --client-key={{ kubeP_ssl_path }}/kube-proxy-key.pem --embed-certs=true --kubeconfig={{ config_path }}/kube-proxy.kubeconfig
+- shell: kubectl config set-context default --cluster=kubernetes --user=kube-proxy --kubeconfig={{ config_path }}/kube-proxy.kubeconfig
+- shell: kubectl config use-context default --kubeconfig={{ config_path }}/kube-proxy.kubeconfig
+
+- name: copy systemd kubelet.service file
+  template: src=systemd/kubelet.service dest=/usr/lib/systemd/system owner=root group=root mode=0644
+  become: true
+  become_user: root
+  become_method: sudo
+- name: copy systemd kube-proxy.service file
+  template: src=systemd/kube-proxy.service dest=/usr/lib/systemd/system owner=root group=root mode=0644
+  become: true
+  become_user: root
+  become_method: sudo
+
+- name: copy config kubelet file
+  template: src=config/kubelet dest={{ config_path }} owner=root group=root
+
+- name: Start kubelet.service
+  systemd:
+    name: kubelet
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
+
+- name: get csr INFO
+  shell: kubectl get csr | grep kubelet-bootstrap | awk '{print $1}'
+  register: kubelet_csr_NAME
+  run_once: true
+  tags: debug
+- name: get csr INFO
+  shell: kubectl get csr | grep kubelet-bootstrap | awk '{print $4}'
+  register: kubelet_csr_CONDITION
+  run_once: true
+  tags: debug
+#- debug: "msg={{ item.0 }} and {{ item.1 }}"
+#  with_together: 
+#  - "{{ kubelet_csr_NAME.stdout_lines }}"
+#  - "{{ kubelet_csr_CONDITION.stdout_lines }}"
+#  run_once: true
+#  tags: debug
+#- debug:
+#    var: kubelet_csr_CONDITION
+#  run_once: true
+#  tags: debug
+
+- name: approve kubelet csr
+  shell: "[ \"{{ item.1 }}\" == \"Pending\" ] && kubectl certificate approve {{ item.0 }}"
+  with_together:
+  - "{{ kubelet_csr_NAME.stdout_lines }}"
+  - "{{ kubelet_csr_CONDITION.stdout_lines }}"
+  run_once: true
+  ignore_errors: true
+  tags: debug
+  
+#  notify: Start kubelet
+- name: copy config proxy file
+  template: src=config/proxy dest={{ config_path }} owner=root group=root
+  notify: Start proxy
+

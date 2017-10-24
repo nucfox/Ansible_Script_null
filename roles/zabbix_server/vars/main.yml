@@ -1,0 +1,31 @@
+zabbix_user: zabbix
+source_path: /usr/local/src
+link_path: /usr/local/zabbix
+
+whether_repeat_install: true
+
+zabbix_path: /usr/local
+zabbix_server_ip: "{{ ansible_default_ipv4.address }}"
+mysql_path: /usr/local/mysql
+# mysql_zabbix_ip: "%"
+mysql_zabbix_ip: "{{ ansible_default_ipv4.address }}"
+
+# mysql_zabbix_passwd: '*EE0D72C1085C46C5278932678FBE2C6A782821B4'  # encrypted is yes
+mysql_zabbix_passwd: "zabbix"
+
+# Indicate that the 'password' field is a `mysql_native_password` hash [yes, no]
+encrypted: no
+
+
+mysql_user: "root"
+mysql_passwd: "*********"
+mysql_port: "3306"
+mysql_ip: "10.100.***.***"
+
+mysql_port_dp: "{{ mysql_port }}"
+
+
+nginx_user: nginx
+nginx_path: /usr/local/nginx
+nginx_config_path: "{{ nginx_path }}/conf/conf.d"
+

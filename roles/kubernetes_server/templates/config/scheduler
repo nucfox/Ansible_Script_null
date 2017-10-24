@@ -1,0 +1,11 @@
+###
+# kubernetes scheduler config
+
+# default config should be adequate
+
+KUBE_ADDRESS="--address=127.0.0.1"
+KUBE_MASTER="--master=http://{{ MASTER_IP }}:8080"
+KUBE_LEADER_ELECT="--leader-elect=true"
+
+# Add your own!
+KUBE_SCHEDULER_ARGS="--log-dir={{ log_path }} --v=2"

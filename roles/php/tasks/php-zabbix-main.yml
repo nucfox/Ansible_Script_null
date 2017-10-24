@@ -1,0 +1,101 @@
+- name: install epel 6 yum
+  yum: name=https://mirrors.tuna.tsinghua.edu.cn/epel/epel-release-latest-6.noarch.rpm
+  when: ansible_distribution_major_version == "6"
+- name: install epel 7 yum
+  yum: name=https://mirrors.tuna.tsinghua.edu.cn/epel/epel-release-latest-7.noarch.rpm
+  when: ansible_distribution_major_version == "7"
+- name: Installation dependencies php
+  yum: name={{ item }} state=latest
+  with_items:
+  - pcre
+  - pcre-devel
+  - zlib
+  - zlib-devel
+  - openssl
+  - openssl-devel
+  - openssl-libs
+  - openssl-perl
+  - openssl-static
+  - bison
+  - bison-devel
+  - libmcrypt-devel
+  - mcrypt
+  - mhash-devel
+  - libxml2-devel
+  - libcurl-devel
+  - bzip2-devel
+  - readline-devel
+  - libedit-devel
+  - sqlite-devel
+  - libpng 
+  - libpng-devel
+  - libjpeg-turbo-devel
+  - freetype-devel
+- name: creat php user
+  user: name={{ php_user }} append="yes"
+- name: copy php Source package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: php_program
+- file:
+  args:
+    path: "{{ source_path }}/{{ php_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    state: absent
+  when: whether_repeat_install
+- unarchive: 
+    src: "{{ php_program.results[0].dest }}"
+    dest: "{{ source_path }}"
+    copy: no
+    creates: "{{ source_path }}/{{ php_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+  register: php_ua_program
+- name: install php server
+  shell: "./configure --prefix={{ php_path }}/{{ php_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --with-config-file-path={{ php_path }}/{{ php_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/etc --enable-inline-optimization --disable-debug --disable-rpath --enable-shared --enable-opcache --enable-fpm --with-fpm-user=php --with-fpm-group=php --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-gettext --enable-mbstring --with-iconv --with-mcrypt --with-mhash --with-openssl --enable-bcmath --enable-soap --with-libxml-dir --enable-pcntl --enable-shmop --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-sockets --with-curl --with-zlib --with-gd --enable-zip --with-bz2 --with-freetype-dir --with-png-dir --with-jpeg-dir --with-readline && make -j4 && make install"
+  args:
+    chdir: "{{ source_path }}/{{ php_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+  when: php_ua_program.skipped is undefined
+- name: link php file
+  file: 
+  args:
+    src: "{{ php_path }}/{{ php_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ link_path }}"
+    state: link
+    owner: "{{ php_user }}"
+    group: "{{ php_user }}"
+- name: copy php config
+  copy: 
+  args:
+    src: "{{ source_path }}/{{ php_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/php.ini-development"
+    dest: "{{ link_path }}/etc/php.ini"
+    remote_src: "True"
+    owner: "{{ php_user }}"
+    group: "{{ php_user }}"
+- copy:
+  args:
+    src: "{{ link_path }}/etc/php-fpm.conf.default"
+    dest: "{{ link_path }}/etc/php-fpm.conf"
+    remote_src: "True"
+    owner: "{{ php_user }}"
+    group: "{{ php_user }}"
+- copy:
+  args:
+    src: "{{ source_path }}/{{ php_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/sapi/fpm/init.d.php-fpm"
+    dest: "/etc/init.d/php-fpm"
+    remote_src: "True"
+    owner: "{{ php_user }}"
+    group: "{{ php_user }}"
+    mode: 0755
+- include: php-env.yml
+  tags:
+  - env
+- include: php-zabbix-cnf.yml
+  tags: 
+  - config
+- file:
+  args:
+    path: "{{ php_path }}/{{ php_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    owner: "{{ php_user }}"
+    group: "{{ php_user }}"
+    recurse: yes
+  notify:
+  - start php-fpm

@@ -1,0 +1,8 @@
+---
+source_path: /usr/local/src
+whether_repeat_install: true
+
+mutt_path: /usr/local
+link_path: /usr/local/mutt
+
+mail_server: "sysadmin@foton.com.cn"

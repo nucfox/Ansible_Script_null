@@ -1,0 +1,12 @@
+filebeat_path: /usr/local
+source_path: /usr/local/src
+link_path: /usr/local/filebeat
+whether_repeat_install: true
+
+filebeat_ip: "{{ ansible_default_ipv4.address }}"
+loadbalance_ip: "\"10.100.58.44:5044\", \"10.100.58.45:5044\", \"10.100.58.46:5044\""
+
+etsv_path: "/u06/etsuser/etsv5.1.2_split"
+tomcat_path: "/u06/etsuser/tomcat"
+scan_run: true
+

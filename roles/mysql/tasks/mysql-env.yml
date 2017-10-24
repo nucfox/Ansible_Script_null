@@ -1,0 +1,8 @@
+---
+- name: Add mysql environment variables
+  blockinfile:
+    dest: /etc/profile
+    marker: "# {mark} ANSIBLE MANAGED BLOCK MYSQL ENV"
+    block: |
+      PATH=$PATH:/usr/local/mysql/bin:/usr/local/mysql/lib
+      export PATH

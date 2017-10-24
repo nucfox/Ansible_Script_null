@@ -1,0 +1,25 @@
+---
+- name: provides logstash alarm sh file
+  copy: src=logstashalarm.sh dest={{ link_path }} owner={{ logstash_user }} group={{ logstash_user }} mode=0755
+  tags:
+  - alarmsh
+- name: provides logstash config file
+  template: src={{ item }} dest={{ link_path }}/config owner={{ logstash_user }} group={{ logstash_user }}
+  with_fileglob:
+  - "../templates/config/*"
+  tags:
+  - modify_config
+  notify:
+  - start logstash_server
+- name: provides logstash conf.d file
+  template: src={{ item }} dest={{ link_path }}/conf.d owner={{ logstash_user }} group={{ logstash_user }}
+  with_fileglob:
+  - "../templates/conf.d/*"
+  tags:
+  - modify_confd
+  notify:
+  - start logstash_server
+- name: install start file
+  command: "{{ link_path }}/bin/system-install"
+  notify:
+  - start logstash_server

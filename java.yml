@@ -1,0 +1,5 @@
+- hosts: [10.100.2.101]
+  remote_user: root
+  roles:
+  - java
+

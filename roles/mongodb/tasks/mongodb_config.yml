@@ -1,0 +1,37 @@
+---
+- name: create log directory
+  file:
+    path: "{{ storage_path }}/logs"
+    recurse: yes
+    state: directory
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+- name: create pid directory
+  file:
+    path: "{{ storage_path }}/run"
+    recurse: yes
+    state: directory
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+- name: create lock directory
+  file:
+    path: "{{ storage_path }}/lock/subsys"
+    recurse: yes
+    state: directory
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+- name: "Disable transparent_hugepage"
+  command: "echo never > /sys/kernel/mm/transparent_hugepage/enabled"
+- name: "Disable transparent_hugepage"
+  command: "echo never > /sys/kernel/mm/transparent_hugepage/defrag"
+- name: setup secur
+  template:
+    src: secur.key
+    dest: "{{ storage_path }}/secur.key"
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+    mode: 0600
+- include: replica_set.yml
+  when: cluste_method == "replica"
+- include: shard.yml
+  when: cluste_method == "shard"

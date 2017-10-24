@@ -1,0 +1,7 @@
+---
+mongodb_user: mongod
+mongodb_path: /usr/local
+source_path: /usr/local/src
+link_path: /usr/local/mongodb
+storage_path: /mongodb 
+whether_repeat_install: false

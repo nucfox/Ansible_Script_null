@@ -1,0 +1,11 @@
+zabbix_user: zabbix
+source_path: /usr/local/src
+link_path: /usr/local/zabbix
+zabbix_path: /usr/local
+
+whether_repeat_install: true
+
+zabbix_server: "10.100.58.44"
+zabbix_agentd: "{{ ansible_hostname }}"
+
+zabbix_agentd_ip: "{{ ansible_default_ipv4.address }}"

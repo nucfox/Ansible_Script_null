@@ -1,0 +1,40 @@
+---
+- name: "create shard data directory"
+  file:
+    path: "{{ storage_path }}/data/shard{{ item.1 }}"
+    recurse: yes
+    state: directory
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+  with_together: "{{ shard_port_number }}"
+- name: "Provide shard configuration files"
+  template:
+    src: config/mongod_shard.conf
+    dest: "{{ storage_path }}/shard{{ item.1 }}.conf"
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+  with_together: "{{ shard_port_number }}"
+- name: "Provide shard startup script for linux 6"
+  template:
+    src: init.d/mongod_shard
+    dest: "/etc/init.d/mongod_shard{{ item.1 }}"
+    owner: root
+    group: root
+    mode: 0750
+  become: true
+  become_user: root
+  become_method: sudo
+  with_together: "{{ shard_port_number }}"
+  when: ansible_distribution_major_version == "6"
+- name: "Provide shard startup script for linux 7"
+  template:
+    src: systemd/system/mongod_shard.service
+    dest: "/usr/lib/systemd/system/mongod_shard{{ item.1 }}.service"
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+  become_user: root
+  become_method: sudo
+  with_together: "{{ shard_port_number }}"
+  when: ansible_distribution_major_version == "7"

@@ -1,0 +1,14 @@
+---
+replica_name: replica_test
+bind_port: 27017
+bind_ip: "{{ ansible_default_ipv4.address }}"
+cluste_method: replica
+shard_port_number: "[[27017,27018,27019],[1, 2, 3]]"
+configsvr_port: 27016
+configsvr_ip_port: "10.100.58.44:27016,10.100.58.45:27016,10.100.58.46:27016"
+route_port: 27015
+role_shardsvr: false
+role_configsvr: false
+route_configdb: false
+configsvr_name: cfgReplSet
+shard_name: shardReplSet
