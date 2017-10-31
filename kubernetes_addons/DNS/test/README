@@ -1,0 +1,4 @@
+kubectl create -f my-nginx.yaml
+kubectl expose deploy my-nginx
+kubectl get services --all-namespaces | grep my-nginx
+kubectl create -f pod-nginx.yaml

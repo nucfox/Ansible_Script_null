@@ -30,7 +30,7 @@ CLUSTER_NAME: kubernetes
 # kubernetes_nodes
 NODES_MASTER_IP: 10.100.57.54
 CLUSTER_DNS_SVC_IP: 10.254.0.2
-CLUSTER_DNS_DOMAIN: cluster.local.
+CLUSTER_DNS_DOMAIN: cluster.local
 
 # SERVICE_CIDR: 10.254.0.0/16
 

@@ -10,7 +10,7 @@ Type=notify
 # exists and systemd currently does not support the cgroup feature set required
 # for containers run by docker
 EnvironmentFile=-/run/flannel/docker
-ExecStart=/usr/bin/dockerd --log-level=error $DOCKER_NETWORK_OPTIONS
+ExecStart=/usr/bin/dockerd --storage-driver=devicemapper --log-level=error $DOCKER_NETWORK_OPTIONS
 ExecReload=/bin/kill -s HUP $MAINPID
 # Having non-zero Limit*s causes performance problems due to accounting overhead
 # in the kernel. We recommend using cgroups to do container-local accounting.
