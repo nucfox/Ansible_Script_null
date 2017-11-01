@@ -1,8 +1,22 @@
+官方DNS插件地址
+https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/dns
+
 copy一个kube-dns.yaml.base副本为kube-dns.yaml
+
 vim编辑
   %s/__PILLAR__DNS__SERVER__/10.254.0.2/g
   %s/__PILLAR__DNS__DOMAIN__/cluster.local/g
-
+  %s/__IMAGE__dns__/gcr.io\/google_containers\/k8s-dns-kube-dns-amd64:1.14.7/g
+  %s/__IMAGE__dnsmasq__nanny__/gcr.io\/google_containers\/k8s-dns-dnsmasq-nanny-amd64:1.14.7/g
+  %s/__IMAGE__sidecar__/gcr.io\/google_containers\/k8s-dns-sidecar-amd64:1.14.7/g
 PS:
-  __PILLAR__DNS__SERVER__替换为CLUSTER_KUBERNETES_SVC_IP的值
-  __PILLAR__DNS__DOMAIN__替换为CLUSTER_DNS_DOMAIN的值
+  __PILLAR__DNS__SERVER__    替换为  CLUSTER_KUBERNETES_SVC_IP的值
+  __PILLAR__DNS__DOMAIN__    替换为  CLUSTER_DNS_DOMAIN的值
+  __IMAGE__dns__             替换为  k8s-dns-kube-dns-amd64的docker镜像
+  __IMAGE__dnsmasq__nanny__  替换为  k8s-dns-dnsmasq-nanny-amd64的docker镜像
+  __IMAGE__sidecar__         替换为  k8s-dns-sidecar-amd64的docker镜像
+  如果gcr.io连不上
+  k8s-dns-kube-dns-amd64       可以使用  uufengfeng\/k8s-dns-kube-dns-amd64:latest
+  k8s-dns-dnsmasq-nanny-amd64  可以使用  uufengfeng\/k8s-dns-dnsmasq-nanny-amd64:latest
+  k8s-dns-sidecar-amd64        可以使用  uufengfeng\/k8s-dns-sidecar-amd64:latest
+  根据实际情况进行修改

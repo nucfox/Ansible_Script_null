@@ -1,0 +1,44 @@
+官方dashboard插件地址
+https://github.com/kubernetes/kubernetes/blob/master/cluster/addons/dashboard
+
+-----------------------------------------------------------------------------
+dashboard-service.yaml
+没有修改
+###
+...
+      addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  type: NodePort 
+  selector:
+    k8s-app: kubernetes-dashboard
+...
+###
+可以新增一个type: NodePort字段,这样外界可以通过地址 nodeIP:nodePort 访问dashboard
+
+dashboard-controller.yaml
+新增字段
+serviceAccountName: dashboard
+用于RBAC授权
+
+vim编辑
+  %s/__IMAGE__dashboard__/gcr.io\/google_containers\/kubernetes-dashboard-amd64:v1.6.3/g
+PS:
+  __IMAGE__dashboard__  替换为  kubernetes-dashboard-amd64的docker镜像
+  如果gcr.io连不上
+  kubernetes-dashboard-amd64  可以使用 uufengfeng\/kubernetes-dashboard-amd64:latest
+
+dashboard-rbac.yaml
+新增文件
+由于 kube-apiserver 启用了 RBAC 授权，而官方源码目录的 dashboardcontroller.yaml 没有定义授权的 ServiceAccount，所以后续访问 kubeapiserver的 API 时会被拒绝
+解决办法是：定义一个名为 dashboard 的 ServiceAccount，然后将它和 ClusterRole view 绑定
+
+创建
+kubectl create -f dashboard-service.yaml
+kubectl create -f dashboard-controller.yaml
+kubectl create -f dashboard-rbac.yaml
+
+
+删除插件
+kubectl delete svc,deploy kubernetes-dashboard -n kube-system
+kubectl delete sa dashboard -n kube-system
+kubectl delete clusterrolebindings dashboard
