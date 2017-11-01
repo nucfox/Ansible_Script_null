@@ -19,6 +19,12 @@ PS:
 value: /api/v1/proxy/namespaces/kube-system/services/monitoring-grafana/
 如果后续使用 kube-apiserver 或者 kubectl proxy 访问 grafana dashboard,则必须将 GF_SERVER_ROOT_URL 设置为 /api/v1/proxy/namespaces/kubesystem/services/monitoring-grafana/,否则后续访问grafana时访问时提示找不到 http://10.64.3.7:8086/api/v1/proxy/namespaces/kubesystem/services/monitoring-grafana/api/dashboards/home
 
+官方:
+ /api/v1/proxy/namespaces/kube-system/services/monitoring-grafana/
+kube 1.7版要修改为
+ /api/v1/namespaces/kube-system/services/monitoring-grafana/proxy/
+
+
 
 heapster.yaml
 vim编辑
