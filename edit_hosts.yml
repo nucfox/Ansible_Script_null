@@ -1,0 +1,4 @@
+- hosts: [10.100.57.60]
+  remote_user: root
+  roles:
+  - edit_hosts

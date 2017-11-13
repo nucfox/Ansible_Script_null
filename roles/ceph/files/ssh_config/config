@@ -1,0 +1,12 @@
+Host admin-node
+   Hostname admin-node
+   User ceph
+Host node1
+   Hostname node1
+   User ceph
+Host node2
+   Hostname node2
+   User ceph
+Host node3
+   Hostname node3
+   User ceph

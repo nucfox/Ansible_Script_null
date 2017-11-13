@@ -1,0 +1,5 @@
+[ceph]
+10.100.57.60 ansible_ssh_user=root ansible_ssh_pass=FT%etrans@100160 ssh_keygen_private=yes ssh_keygen_pub=yes deploy_name=admin-node
+10.100.57.56 ansible_ssh_user=root ansible_ssh_pass=FT%etrans@100156 ssh_keygen_pub=yes
+10.100.57.55 ansible_ssh_user=root ansible_ssh_pass=FT%etrans@100155 ssh_keygen_pub=yes
+10.100.57.54 ansible_ssh_user=root ansible_ssh_pass=FT%etrans@100154 ssh_keygen_pub=yes

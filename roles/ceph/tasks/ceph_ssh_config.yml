@@ -1,0 +1,17 @@
+---
+- name: Add ceph ssh config /home/ceph/.ssh/config
+  blockinfile:
+    dest: "/home/{{ ceph_user }}/.ssh/config"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK SSH CONFIG"
+    block: "{{ lookup('file','./ssh_config/config')}}"
+    create: yes
+    mode: 0600
+    owner: "{{ ceph_user }}"
+    group: "{{ ceph_user }}"
+- name: edit /etc/ssh/ssh_config
+  blockinfile:
+    dest: /etc/ssh/ssh_config
+    marker: "# {mark} ANSIBLE MANAGED BLOCK CEPH SSH CONFIG"
+    block: "{{ lookup('file','./ssh_config/ssh_config')}}"
+    create: yes
+    mode: 0644

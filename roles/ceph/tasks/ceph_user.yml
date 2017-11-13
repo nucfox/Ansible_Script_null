@@ -1,0 +1,31 @@
+---
+- name: Add ceph user
+  user:
+    name: "{{ ceph_user }}"
+    comment: "ceph user"
+    password: "{{ ceph_password }}"
+#- name: remove sudoers 'i' attribute
+#  shell: chattr -i /etc/sudoers
+#- name: config /etc/sudoers
+#  blockinfile:
+#    dest: /etc/sudoers
+#    marker: "# {mark} ANSIBLE MANAGED BLOCK SUDOERS"
+#    block: |
+#      #includedir /etc/sudoers.d
+#- name: add sudoers 'i' attribute
+#  shell: chattr +i /etc/sudoers
+- name: config /etc/sudoers.d/ceph
+  blockinfile:
+    dest: /etc/sudoers.d/ceph
+    marker: "# {mark} ANSIBLE MANAGED BLOCK SUDOERS CEPH"
+    block: |
+      {{ ceph_user }} ALL = (root) NOPASSWD:ALL
+      Defaults:{{ ceph_user }} !requiretty
+    create: yes
+    mode: 0440
+  tags:
+     - debug
+- name: add sudoers ceph 'i' attribute
+  shell: chattr +i /etc/sudoers.d/ceph
+  tags:
+     - debug

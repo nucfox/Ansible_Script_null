@@ -1,0 +1,5 @@
+---
+- name: install the latest version of ecph_deploy
+  yum:
+    name: ceph-deploy
+    state: latest

@@ -1,7 +1,5 @@
 ---
-- include: check_install.yml
-  static: no
+- import_tasks: check_install.yml
   when: kubeC_stated == "install"
-- include: remove.yml
-  static: no
+- import_tasks: remove.yml
   when: kubeC_stated == "remove"

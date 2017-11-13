@@ -7,15 +7,15 @@ heapster-rbac.yaml文档 heapster-1.4.3/deploy/kube-config/rbac<br />
 #
 #grafana.yaml<br />
 vim编辑<br />
-  %s/__IMAGE__heapster__grafana__/gcr.io\/google_containers\/heapster-grafana-amd64:v4.4.3/g<br />
+  %s/\_\_IMAGE\_\_heapster\_\_grafana\_\_/gcr.io\/google\_containers\/heapster-grafana-amd64:v4.4.3/g<br />
 PS:<br />
-  __IMAGE__heapster__grafana__  替换为  heapster-grafana-amd64的docker镜像<br />
+  \_\_IMAGE\_\_heapster\_\_grafana\_\_  替换为  heapster-grafana-amd64的docker镜像<br />
   如果gcr.io连不上<br />
-  heapster-grafana-amd64  可以使用  uufengfeng\/heapster-grafana-amd64:latest<br />
+  heapster-grafana-amd64  可以使用  uufengfeng\/heapster-grafana-amd64:v4.0.2<br />
 #
 value: /<br />
 value: /api/v1/proxy/namespaces/kube-system/services/monitoring-grafana/<br />
-如果后续使用 kube-apiserver 或者 kubectl proxy 访问 grafana dashboard,则必须将 GF_SERVER_ROOT_URL 设置为 /api/v1/proxy/namespaces/kubesystem/services/monitoring-grafana/,否则后续访问grafana时访问时提示找不到 http://10.64.3.7:8086/api/v1/proxy/namespaces/kubesystem/services/monitoring-grafana/api/dashboards/home<br />
+如果后续使用 kube-apiserver 或者 kubectl proxy 访问 grafana dashboard,则必须将 GF\_SERVER\_ROOT\_URL 设置为 /api/v1/proxy/namespaces/kubesystem/services/monitoring-grafana/,否则后续访问grafana时访问时提示找不到 http://10.64.3.7:8086/api/v1/proxy/namespaces/kubesystem/services/monitoring-grafana/api/dashboards/home<br />
 <br />
 官方:<br />
  /api/v1/proxy/namespaces/kube-system/services/monitoring-grafana/<br />
@@ -24,19 +24,19 @@ kube 1.7版要修改为<br />
 
 #heapster.yaml<br />
 vim编辑<br />
-  %s/__IMAGE__heapster__/gcr.io\/google_containers\/heapster-amd64:v1.3.0/g<br />
+  %s/\_\_IMAGE\_\_heapster\_\_/gcr.io\/google\_containers\/heapster-amd64:v1.3.0/g<br />
 PS:<br />
-  __IMAGE__heapster__  替换为  heapster-amd64的docker镜像<br />
+  \_\_IMAGE\_\_heapster\_\_  替换为  heapster-amd64的docker镜像<br />
   如果gcr.io连不上<br />
-  heapster-amd64  可以使用  uufengfeng\/heapster-amd64:latest<br />
+  heapster-amd64  可以使用  uufengfeng\/heapster-amd64:v1.3.0<br />
 #
 #influxdb.yaml<br />
 vim编辑<br />
-  %s/__IMAGE__heapster__influxdb__/gcr.io\/google_containers\/heapster-influxdb-amd64:v1.1.1/g<br />
+  %s/\_\_IMAGE\_\_heapster\_\_influxdb\_\_/gcr.io\/google\_containers\/heapster-influxdb-amd64:v1.1.1/g<br />
 PS:<br />
-  __IMAGE__heapster__influxdb__  替换为  heapster-influxdb-amd64的docker镜像<br />
+  \_\_IMAGE\_\_heapster\_\_influxdb\_\_  替换为  heapster-influxdb-amd64的docker镜像<br />
   如果gcr.io连不上<br />
-  heapster-influxdb-amd64  可以使用  uufengfeng\/heapster-influxdb-amd64:latest<br />
+  heapster-influxdb-amd64  可以使用  uufengfeng\/heapster-influxdb-amd64:v1.1.1<br />
 #
 #heapster-rbac.yaml<br />
 未修改<br />
@@ -50,6 +50,7 @@ kubectl create -f influxdb.yaml<br />
 删除插件<br />
 kubectl delete svc,deploy monitoring-grafana -n kube-system<br />
 kubectl delete sa,deploy,svc heapster -n kube-system<br />
+kubectl delete ClusterRoleBinding heapster <br />
 kubectl delete deploy,svc monitoring-influxdb -n kube-system<br />
 
 FAQ<br />

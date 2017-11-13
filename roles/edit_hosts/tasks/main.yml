@@ -1,0 +1,6 @@
+---
+- name: Add HOST 
+  blockinfile:
+    dest: /etc/hosts
+    marker: "# {mark} ANSIBLE MANAGED BLOCK HOST"
+    block: "{{ lookup('file','./hosts_file/{{ hostsfile_name }}')}}"

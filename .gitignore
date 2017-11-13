@@ -5,3 +5,5 @@
 *.pem
 *.csr
 *.tgz
+id_rsa
+id_rsa.pub

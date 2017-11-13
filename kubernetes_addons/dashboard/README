@@ -25,7 +25,7 @@ vim编辑
 PS:
   __IMAGE__dashboard__  替换为  kubernetes-dashboard-amd64的docker镜像
   如果gcr.io连不上
-  kubernetes-dashboard-amd64  可以使用 uufengfeng\/kubernetes-dashboard-amd64:latest
+  kubernetes-dashboard-amd64  可以使用 uufengfeng\/kubernetes-dashboard-amd64:v1.6.3
 
 dashboard-rbac.yaml
 新增文件

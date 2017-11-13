@@ -1,0 +1,12 @@
+- hosts: [10.100.57.54,10.100.57.55,10.100.57.56,10.100.57.60]
+  remote_user: root
+  roles:
+  - ceph
+  vars:
+    ceph_user: ceph
+    ceph_password: $6$D2Hb1qYUYoiM0yJY$oLyBwEzCgBOqrkcZviogX58.fBRMNpRMcm.tOTDoGE6wPdMvSi3OPVwLilLkFKVbQ9LrxibH0QvNZWSU/d0tO1
+
+# Password Generation
+# pip install passlib
+# python -c "from passlib.hash import sha512_crypt; import getpass; print sha512_crypt.using(rounds=5000).hash(getpass.getpass())"
+# Default password: ceph

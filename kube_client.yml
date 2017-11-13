@@ -1,4 +1,4 @@
-- hosts: 10.100.57.54
+- hosts: [10.100.57.54,10.100.57.55,10.100.57.56]
   remote_user: root
   roles:
   - kubernetes_client

@@ -21,7 +21,7 @@ spec:
       serviceAccountName: heapster
       containers:
       - name: heapster
-        image: uufengfeng/heapster-amd64:latest
+        image: uufengfeng/heapster-amd64:v1.3.0
         imagePullPolicy: IfNotPresent
         command:
         - /heapster

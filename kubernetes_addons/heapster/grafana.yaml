@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: grafana
-        image: uufengfeng/heapster-grafana-amd64:latest
+        image: uufengfeng/heapster-grafana-amd64:v4.0.2
         ports:
         - containerPort: 3000
           protocol: TCP

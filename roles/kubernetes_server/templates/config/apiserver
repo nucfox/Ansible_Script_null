@@ -15,7 +15,7 @@ KUBE_INSECURE_BIND_ADDRESS="--insecure-bind-address={{ MASTER_IP }}"
 
 # security
 KUBE_AUTHORIZATION_MODE="--authorization-mode=RBAC"
-KUBE_RUNTIME_CONFIG="--runtime-config=rbac.authorization.k8s.io/v1alpha1"
+KUBE_RUNTIME_CONFIG="--runtime-config=rbac.authorization.k8s.io/v1"
 KUBE_KUBELET_HTTPS="--kubelet-https=true"
 KUBE_TOKEN_AUTH_FILE="--token-auth-file={{ config_path }}/token.csv"
 

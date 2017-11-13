@@ -16,7 +16,10 @@ PS:
   __IMAGE__dnsmasq__nanny__  替换为  k8s-dns-dnsmasq-nanny-amd64的docker镜像
   __IMAGE__sidecar__         替换为  k8s-dns-sidecar-amd64的docker镜像
   如果gcr.io连不上
-  k8s-dns-kube-dns-amd64       可以使用  uufengfeng\/k8s-dns-kube-dns-amd64:latest
-  k8s-dns-dnsmasq-nanny-amd64  可以使用  uufengfeng\/k8s-dns-dnsmasq-nanny-amd64:latest
-  k8s-dns-sidecar-amd64        可以使用  uufengfeng\/k8s-dns-sidecar-amd64:latest
+  k8s-dns-kube-dns-amd64       可以使用  uufengfeng\/k8s-dns-kube-dns-amd64:1.14.7
+  k8s-dns-dnsmasq-nanny-amd64  可以使用  uufengfeng\/k8s-dns-dnsmasq-nanny-amd64:1.14.7
+  k8s-dns-sidecar-amd64        可以使用  uufengfeng\/k8s-dns-sidecar-amd64:1.14.7
   根据实际情况进行修改
+
+创建
+kubectl create -f kube-dns.yaml

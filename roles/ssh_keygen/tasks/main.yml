@@ -1,0 +1,5 @@
+---
+- include_tasks: root_user.yml
+  when: target_user == "root"
+- include_tasks: other_user.yml
+  when: target_user != "root" and target_user != "target_null"

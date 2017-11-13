@@ -1,0 +1,16 @@
+---
+- import_tasks: ceph_repo.yml
+  when: deploy_name == "admin-node"
+- import_tasks: ceph_user.yml
+- import_role:
+    name: ssh_keygen
+  vars:
+    target_user: "{{ ceph_user }}"
+- import_role:
+    name: edit_hosts
+  vars:
+    hostsfile_name: ceph
+- import_tasks: ceph_ssh_config.yml
+  when: deploy_name == "admin-node"
+- import_tasks: install_ceph_deploy.yml
+  when: deploy_name == "admin-node"

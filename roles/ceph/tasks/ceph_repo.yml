@@ -1,0 +1,14 @@
+- name: Add ceph repository
+  yum_repository:
+    name: ceph
+    description: ceph YUM repo
+    file: ceph_deploy
+    baseurl: http://download.ceph.com/rpm-jewel/el$releasever/$basearch/
+    gpgcheck: no
+- name: Add ceph noarch repository
+  yum_repository:
+    name: ceph-noarch
+    description: ceph noarch YUM repo
+    file: ceph_deploy
+    baseurl: http://download.ceph.com/rpm-jewel/el$releasever/noarch/
+    gpgcheck: no

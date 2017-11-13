@@ -1,7 +1,5 @@
 ---
-- include: install.yml
-  static: no
+- import_tasks: install.yml
   when: kubeN_stated == "install"
-- include: remove.yml
-  static: no
+- import_tasks: remove.yml
   when: kubeN_stated == "remove"

@@ -3,6 +3,5 @@
   command: "{{ kube_path }}/kubectl"
   register: result
   ignore_errors: true
-- include: install.yml
-  static: no
+- import_tasks: install.yml
   when: result|failed

@@ -1,0 +1,3 @@
+---
+ceph_password: $6$D2Hb1qYUYoiM0yJY$oLyBwEzCgBOqrkcZviogX58.fBRMNpRMcm.tOTDoGE6wPdMvSi3OPVwLilLkFKVbQ9LrxibH0QvNZWSU/d0tO1
+deploy_name: default_node

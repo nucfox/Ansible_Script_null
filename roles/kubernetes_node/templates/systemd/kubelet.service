@@ -10,11 +10,9 @@ EnvironmentFile=-{{ config_path }}/kubelet
 ExecStart={{ kube_path }}/kubelet \
 ${KUBELET_HOSTNAME} \
 ${KUBELET_ADDRESS} \
-${KUBELET_API_SERVER} \
 --pod-infra-container-image=registry.access.redhat.com/rhel7/pod-infrastructure:latest \
 --experimental-bootstrap-kubeconfig={{ config_path }}/bootstrap.kubeconfig \
 --kubeconfig={{ config_path }}/kubelet.kubeconfig \
---require-kubeconfig \
 --cert-dir={{ config_path }}/ssl \
 --hairpin-mode promiscuous-bridge \
 --allow-privileged=true \

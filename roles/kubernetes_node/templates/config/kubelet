@@ -11,7 +11,7 @@ KUBELET_ADDRESS="--address={{ NODE_IP }}"
 KUBELET_HOSTNAME="--hostname-override={{ NODE_IP }}"
 
 # location of the api-server
-KUBELET_API_SERVER="--api-servers=http://{{ MASTER_IP }}:8080"
+#KUBELET_API_SERVER="--api-servers=http://{{ MASTER_IP }}:8080"
 
 KUBELET_CLUSTER_DNS="--cluster_dns={{ CLUSTER_DNS_SVC_IP }}"
 KUBELET_CLUSTER_DOMAIN="--cluster_domain={{ CLUSTER_DNS_DOMAIN }}"
