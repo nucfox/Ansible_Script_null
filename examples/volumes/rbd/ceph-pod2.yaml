@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ceph-pod2
+spec:
+  containers:
+  - name: ceph-busybox2
+    image: busybox
+    command: ["sleep", "600000"]
+    volumeMounts:
+    - name: ceph-vol2
+      mountPath: /usr/share/busybox
+      readOnly: false
+  volumes:
+  - name: ceph-vol2
+    persistentVolumeClaim:
+      claimName: ceph-claim

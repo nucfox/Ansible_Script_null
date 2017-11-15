@@ -183,7 +183,35 @@ QVFDNTJRdGFyc0RaTEJBQUpIZlRQbnB1bVJYMll4NjcvMVpnK0E9PQo=
 
 可以到pod被调度到的node上查看信息
 <pre><code>
-mount
+#rbd showmapped
+
+#mount
 ... ...
 /dev/rbd0 on /var/lib/kubelet/plugins/kubernetes.io/rbd/rbd/rbd-image-foo type xfs (rw)
 </code></pre>
+
+
+k8s pv和pvc 持久化存储
+创建一个1G映像作为测试
+<pre><code>
+#rbd create ceph-image -s 1024
+#rbd info ceph-image
+</code></pre>
+
+修改pv和pvc并创建
+kubectl create -f ceph-pv.yaml
+kubectl create -f ceph-pvc.yaml
+创建测试用的pod
+kubectl create -f ceph-pod1.yaml
+
+测试持久化
+kubectl exec ceph-pod1 -it touch /usr/share/busybox/hello-ceph.txt
+kubectl exec ceph-pod1 -it vi /usr/share/busybox/hello-ceph.txt
+kubectl exec ceph-pod1 -it cat /usr/share/busybox/hello-ceph.txt
+
+删除ceph-pod1
+kubectl delete po ceph-pod1
+创建ceph-pod2
+kubectl create -f ceph-pod2.yaml
+查看之前创建的文件
+kubectl exec ceph-pod2 -it cat /usr/share/busybox/hello-ceph.txt
