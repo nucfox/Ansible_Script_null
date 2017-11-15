@@ -36,6 +36,7 @@ kube 1.7版要修改为<br />
 
 
 ##fluentd TLS
+编辑 fluentd-es-configmap.yaml<br />
 <pre><code>
 ...
 <filter kubernetes.**>
@@ -46,6 +47,21 @@ kube 1.7版要修改为<br />
 </filter>
 ...
 </code></pre>
+编辑 fluentd-es-ds.yaml 挂载ssl证书目录<br />
+<pre><code>
+...
+  volumeMounts:
+  ...
+  - name: tls-files
+  mountPath: /etc/kubernetes/ssl
+...
+volumes:
+- name: tls-files
+  hostPath:
+    path: /etc/kubernetes/ssl
+...
+</pre></code>
+
 
 kubectl create -f fluentd-es-configmap.yaml -n kube-system<br />
 kubectl create -f fluentd-es-ds.yaml<br />
@@ -56,3 +72,8 @@ kubectl delete ClusterRole fluentd-es<br />
 kubectl delete sa fluentd-es -n kube-system<br />
 kubectl delete ClusterRoleBinding fluentd-es<br />
 kubectl delete ds fluentd-es-v2.0.2 -n kube-system<br />
+
+kubectl create -f es-service.yaml
+kubectl create -f es-statefulset.yaml
+
+kubectl delete svc,sa,clusterroles,clusterrolebindings,statefulsets elasticsearch-logging -n kube-system
