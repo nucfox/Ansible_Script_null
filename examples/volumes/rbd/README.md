@@ -137,7 +137,7 @@ https://github.com/kubernetes/kubernetes/tree/master/examples/volumes/rbd
 
 默认已经开启了安全验证cephx,所以使用rbd-with-secret.json和secret/ceph-secret.yaml
 
-volumes部分是和ceph rbd紧密相关的一些信息，各个字段的大致含义如下：
+volumes部分是和ceph rbd紧密相关的一些信息，各个字段的大致含义如下:
 
 name:volume名字,这个没什么可说的,顾名思义即可.
 rbd.monitors:前面提到过ceph集群的monitor组件,这里填写monitor组件的通信信息,集群里有几个monitor就填几个;
