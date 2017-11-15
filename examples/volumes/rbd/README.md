@@ -107,8 +107,8 @@ ceph-deploy admin deploy-node node1 node2 node3
 
 
 查看集群状态
-sudo ceph osd tree
 <pre><code>
+#sudo ceph osd tree
 ID WEIGHT  TYPE NAME                   UP/DOWN REWEIGHT PRIMARY-AFFINITY 
 -1 0.05806 root default                                                  
 -2 0.01909     host exhibition-parse-2                                   
@@ -118,8 +118,8 @@ ID WEIGHT  TYPE NAME                   UP/DOWN REWEIGHT PRIMARY-AFFINITY
 -4 0.01949     host exhibition-mysql-1                                   
  2 0.01949         osd.2                    up  1.00000          1.00000 
 </code></pre>
-sudo ceph -s
 <pre><code>
+#sudo ceph -s
     cluster 15ad522a-1a3b-4d4a-bc62-828dcf5ffa56
      health HEALTH_OK
      monmap e1: 3 mons at {exhibition-parse-1=10.100.57.56:6789/0,exhibition-parse-2=10.100.57.57:6789/0,exhibition-web-2=10.100.57.60:6789/0}
@@ -148,37 +148,37 @@ secret.Ref:引用的k8s secret对象名称
 
 在rbd服务器上创建磁盘块设备映像文件
 <pre><code>
-\#rbd create foo -s 1024
-\#rbd list
+#rbd create foo -s 1024
+#rbd list
 foo
-</code><pre>
+</code></pre>
 如果之前没有定义rbd\_default\_features = 1,可以在创建映像时指定只开启layering特性,应为3.10内核只支持layering特性
 
 将foo image映射到内核
 <pre><code>
 rbd map foo
-</code><pre>
+</code></pre>
 
 获取client.admin的keyring值并用base64编码
 <pre><code>
-\#ceph auth get-key client.admin
+#ceph auth get-key client.admin
 AQC52QtarsDZLBAAJHfTPnpumRX2Yx67/1Zg+A==
-\#echo "AQC52QtarsDZLBAAJHfTPnpumRX2Yx67/1Zg+A==" | base64
+#echo "AQC52QtarsDZLBAAJHfTPnpumRX2Yx67/1Zg+A==" | base64
 QVFDNTJRdGFyc0RaTEJBQUpIZlRQbnB1bVJYMll4NjcvMVpnK0E9PQo=
 </code></pre>
 
 修改ceph-secret.yaml文件,data下的key值
 创建ceph-secret:
 <pre><code>
-\#kubectl create -f ceph-secret.yaml
-\#kubectl get secret
+#kubectl create -f ceph-secret.yaml
+#kubectl get secret
 </code></pre>
 
 修改rbd-with-secret.json
 
 创建
 <pre><code>
-\#kubectl create -f rbd-with-secret.json
+#kubectl create -f rbd-with-secret.json
 </code></pre>
 
 可以到pod被调度到的node上查看信息
