@@ -1,5 +1,5 @@
 - name: Installation dependencies ZABBIX
-  yum: name="{{ item }}" state="latest"
+  yum: name={{ item }} state=latest
   with_items: 
   - net-snmp-devel
   - gcc
