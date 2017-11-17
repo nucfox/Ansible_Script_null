@@ -13,15 +13,15 @@
   register: zabbix_program
 - file:
   args:
-    path: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     state: absent
   when: whether_repeat_install
-- unarchive: src={{ zabbix_program.results[0].dest }} dest={{ source_path }} copy=no
+- unarchive: src={{ source_path }}/{{ zabbix_program.results[0].item | basename }} dest={{ source_path }} copy=no
   register: zabbix_ua_program
 - name: install zabbix_server
-  shell: "./configure --prefix={{ zabbix_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --enable-server --enable-agent --with-mysql --with-net-snmp --with-libcurl --with-libxml2 --enable-java --with-mysql={{ mysql_path }}/bin/mysql_config  && make -j4 && make install"
+  shell: "./configure --prefix={{ zabbix_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --enable-server --enable-agent --with-mysql --with-net-snmp --with-libcurl --with-libxml2 --enable-java --with-mysql={{ mysql_path }}/bin/mysql_config  && make -j4 && make install"
   args:
-    chdir: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    chdir: "{{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
   when: zabbix_ua_program.skipped is undefined
 - name: Upgrade pip
   easy_install:
@@ -82,7 +82,7 @@
 - name: Initialize zabbix database
   mysql_db:
     name: zabbix
-    target: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/database/mysql/schema.sql"
+    target: "{{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/database/mysql/schema.sql"
     encoding: utf8
     login_host: "{{ mysql_ip }}"
     login_password: "{{ mysql_passwd }}"
@@ -94,7 +94,7 @@
     name: zabbix
     state: import
     encoding: utf8
-    target: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/database/mysql/images.sql"
+    target: "{{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/database/mysql/images.sql"
     login_host: "{{ mysql_ip }}"
     login_password: "{{ mysql_passwd }}"
     login_user: "{{ mysql_user }}"
@@ -104,7 +104,7 @@
     name: zabbix
     state: import
     encoding: utf8
-    target: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/database/mysql/data.sql"
+    target: "{{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/database/mysql/data.sql"
     login_host: "{{ mysql_ip }}"
     login_password: "{{ mysql_passwd }}"
     login_user: "{{ mysql_user }}"
@@ -112,7 +112,7 @@
   when: mysql_zabbix.changed
 - file:
   args:
-    src: "{{ zabbix_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    src: "{{ zabbix_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     path: "{{ link_path }}"
     state: link
     owner: "{{ zabbix_user }}"
@@ -125,7 +125,7 @@
   copy: src="alarm.sh" dest={{ link_path }}/alertscripts owner={{ zabbix_user }} group={{ zabbix_user }} mode="0755"
 - name: copy zabbix server init
   copy:
-    src: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/misc/init.d/fedora/core/zabbix_server"
+    src: "{{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/misc/init.d/fedora/core/zabbix_server"
     dest: "/etc/init.d/"
     remote_src: true
     owner: "{{ zabbix_user }}"
@@ -138,7 +138,7 @@
     line: "BASEDIR={{ link_path }}"
 - file: 
   args:
-    path: "{{ zabbix_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ zabbix_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     recurse: yes
     state: directory
     owner: "{{ zabbix_user }}"
@@ -151,9 +151,9 @@
     owner: "{{ zabbix_user }}"
     group: "{{ zabbix_user }}"
 - name: copy zabbix web site
-  shell: "cp -r {{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/frontends/php {{ nginx_path }}/www/site/zabbix && chown -R {{ zabbix_user }}. {{ nginx_path }}/www/site/zabbix"
+  shell: "cp -r {{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/frontends/php {{ nginx_path }}/www/site/zabbix && chown -R {{ zabbix_user }}. {{ nginx_path }}/www/site/zabbix"
 #- copy:
-#    src: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/frontends/php"
+#    src: "{{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/frontends/php"
 #    dest: "{{ nginx_path }}/www/site"
 #    remote_src: true
 #    owner: "{{ zabbix_user }}"

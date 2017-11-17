@@ -64,6 +64,7 @@ rbd\_default\_features = 1  #仅是layering对应的bit码所对应的整数值
 
 ceph-deploy install deploy-node node1 node2 node3
 ceph-deploy通过ssh登陆个服务器安装ceph组件
+PS:安装ceph组件时,只要使用ceph功能的服务器都要安装组件,install后的服务器不局限于部署服务器,根据实际情况调整
 
 初始化ceph monitor node
 ceph-deploy mon create-initial

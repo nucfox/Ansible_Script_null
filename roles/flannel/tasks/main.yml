@@ -4,7 +4,7 @@
   with_fileglob:
   - main_program/*.tar.gz
   register: flannel_program
-- unarchive: src={{ flannel_program.results[0].dest }} dest={{ source_path }} copy=no
+- unarchive: src={{ source_path }}/{{ flannel_program.results[0].item | basename }} dest={{ source_path }} copy=no
 - name: install flannel
   copy:
     src: "{{ source_path }}/flanneld"
@@ -40,12 +40,15 @@
   shell: "etcdctl --endpoints={{ ETCD_ENDPOINTS }} --ca-file={{ ca_ssl_path }}/ca.pem --cert-file={{ flannel_ssl_path }}/flanneld.pem --key-file={{ flannel_ssl_path }}/flanneld-key.pem get {{ FLANNEL_ETCD_PREFIX }}/config"
   register: flannel_podnet
   ignore_errors: true
+  run_once: true
+  delegate_to: "{{ delegation_etcd }}"
 #- debug:
 #    var: flannel_podnet
 
 - name: set etcd cluster Pod net INFO
   shell: "etcdctl --endpoints={{ ETCD_ENDPOINTS }} --ca-file={{ ca_ssl_path }}/ca.pem --cert-file={{ flannel_ssl_path }}/flanneld.pem --key-file={{ flannel_ssl_path }}/flanneld-key.pem set {{ FLANNEL_ETCD_PREFIX }}/config \'{\"Network\": \"{{ CLUSTER_CIDR }}\", \"SubnetLen\": 24, \"Backend\": {\"Type\": \"vxlan\"}}\'"
   run_once: true
+  delegate_to: "{{ delegation_etcd }}"
   when: flannel_podnet|failed
 
 - name: copy systemd file

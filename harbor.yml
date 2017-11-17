@@ -1,0 +1,5 @@
+- hosts: [10.100.57.58]
+  remote_user: root
+  roles:
+  - harbor
+#force_dc: true

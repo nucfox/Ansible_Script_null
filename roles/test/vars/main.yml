@@ -1,3 +1,5 @@
+source_path: /usr/local/src
+
 testvar: "elastic_vehicle_{{ ansible_default_ipv4.address | regex_replace('^.*\\.(.*)\\.(.*)$', '\\1\\2') }}"
 testvar1: "{{ ansible_hostname }}"
 
@@ -41,3 +43,6 @@ Storage_dir1:
     bulker:
       root: /u06_data/etsuser/etsv_data/raw-kafka
       bakroot: /u06_data/etsuser/etsv_data/raw_bak-kafka
+
+
+delegation_var: 10.100.57.58

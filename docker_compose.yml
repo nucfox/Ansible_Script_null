@@ -1,0 +1,5 @@
+- hosts: [10.100.57.58]
+  remote_user: root
+  roles:
+  - docker_compose
+#force_dc: true

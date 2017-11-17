@@ -1,0 +1,7 @@
+---
+- name: copy docker compose binary
+  copy:
+    src: main_program/docker-compose
+    dest: "{{ compose_path }}/docker-compose"
+    mode: 0755
+

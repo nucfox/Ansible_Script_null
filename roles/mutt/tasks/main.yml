@@ -10,19 +10,19 @@
   register: mutt_program
 - file:
   args:
-    path: "{{ source_path }}/{{ mutt_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ source_path }}/{{ mutt_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     state: absent
   when: whether_repeat_install
-- unarchive: src={{ mutt_program.results[0].dest }} dest={{ source_path }} copy=no
+- unarchive: src={{ source_path }}/{{ mutt_program.results[0].item | basename }} dest={{ source_path }} copy=no
   register: mutt_ua_program
 - name: install mutt_server
-  shell: "./configure --prefix={{ mutt_path }}/{{ mutt_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}  && make && make install"
+  shell: "./configure --prefix={{ mutt_path }}/{{ mutt_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}  && make && make install"
   args:
-    chdir: "{{ source_path }}/{{ mutt_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    chdir: "{{ source_path }}/{{ mutt_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
   when: mutt_ua_program.skipped is undefined
 - file:
   args:
-    src: "{{ mutt_path }}/{{ mutt_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    src: "{{ mutt_path }}/{{ mutt_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     path: "{{ link_path }}"
     state: link
 - file:

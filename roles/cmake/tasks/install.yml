@@ -6,18 +6,18 @@
   register: cmake_program
 - file:
   args:
-    path: "{{ source_path }}/{{ cmake_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ source_path }}/{{ cmake_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     state: absent
   when: whether_repeat_install
 - unarchive:
-    src: "{{ cmake_program.results[0].dest }}"
+    src: "{{ source_path }}/{{ cmake_program.results[0].item | basename }}"
     dest: "{{ source_path }}"
     copy: no
-    creates: "{{ source_path }}/{{ cmake_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    creates: "{{ source_path }}/{{ cmake_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
   register: cmake_ua_program
 - name: install cmake server
   shell: "./bootstrap && make && make install"
   args:
-    chdir: "{{ source_path }}/{{ cmake_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    chdir: "{{ source_path }}/{{ cmake_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
   when: cmake_ua_program.skipped is undefined
 

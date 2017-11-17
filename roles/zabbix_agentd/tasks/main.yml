@@ -8,19 +8,19 @@
   register: zabbix_program
 - file:
   args:
-    path: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     state: absent
   when: whether_repeat_install
-- unarchive: src={{ zabbix_program.results[0].dest }} dest={{ source_path }} copy=no
+- unarchive: src={{ source_path }}/{{ zabbix_program.results[0].item | basename }} dest={{ source_path }} copy=no
   register: zabbix_ua_program
 - name: install zabbix_agentd
-  shell: "./configure --prefix={{ zabbix_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --enable-agent  && make -j4 && make install"
+  shell: "./configure --prefix={{ zabbix_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --enable-agent  && make -j4 && make install"
   args:
-    chdir: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    chdir: "{{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
   when: zabbix_ua_program.skipped is undefined and zabbix_agentd_ip != zabbix_server
 - file:
   args:
-    src: "{{ zabbix_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    src: "{{ zabbix_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     path: "{{ link_path }}"
     state: link
     owner: "{{ zabbix_user }}"
@@ -28,7 +28,7 @@
   when: zabbix_ua_program.skipped is undefined and zabbix_agentd_ip != zabbix_server
 - name: copy zabbix_agent init
   copy:
-    src: "{{ source_path }}/{{ zabbix_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/misc/init.d/fedora/core/zabbix_agentd"
+    src: "{{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/misc/init.d/fedora/core/zabbix_agentd"
     dest: "/etc/init.d/"
     remote_src: true
     owner: "{{ zabbix_user }}"

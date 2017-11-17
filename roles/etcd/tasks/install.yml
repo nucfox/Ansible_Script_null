@@ -11,15 +11,15 @@
   with_fileglob:
   - main_program/*.tar.gz
   register: etcd_program
-- unarchive: src={{ etcd_program.results[0].dest }} dest={{ source_path }} copy=no
+- unarchive: src={{ source_path }}/{{ etcd_program.results[0].item | basename }} dest={{ source_path }} copy=no
 - name: install etcd
   copy:
-    src: "{{ source_path }}/{{ etcd_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/etcd"
+    src: "{{ source_path }}/{{ etcd_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/etcd"
     dest: "{{ etcd_path }}"
     mode: 0755
     remote_src: True
 - copy:
-    src: "{{ source_path }}/{{ etcd_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/etcdctl"
+    src: "{{ source_path }}/{{ etcd_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/etcdctl"
     dest: "{{ etcd_path }}"
     mode: 0755
     remote_src: True

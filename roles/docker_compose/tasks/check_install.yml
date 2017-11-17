@@ -1,0 +1,7 @@
+---
+- name: Check whether the installation of docker_compose
+  command: "{{ compose_path }}/docker-compose version"
+  register: result
+  ignore_errors: true
+- import_tasks: install.yml
+  when: result|failed or force_dc

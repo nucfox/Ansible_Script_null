@@ -1,0 +1,33 @@
+---
+- file:
+  args:
+    path: "{{ install_path }}"
+    state: directory
+
+- name: copy harbor package
+  copy: src={{ item }} dest={{ source_path }}
+  with_fileglob:
+  - main_program/*.tgz
+  register: harbor_program
+- unarchive: src={{ source_path }}/{{ harbor_program.results[0].item | basename }} dest={{ install_path }} copy=no
+
+- file:
+  args:
+    path: "{{ ca_ssl_path }}"
+    state: directory
+- file:
+  args:
+    path: "{{ harbor_ssl_path }}"
+    state: directory
+
+- name: copy ca pem
+  copy: src={{ item }} dest={{ ca_ssl_path }}
+  with_fileglob:
+  - pem/ca*pem
+- name: copy harbor pem
+  copy: src={{ item }} dest={{ harbor_ssl_path }}
+  with_fileglob:
+  - pem/harbor*pem
+
+#- name: copy harbor.cfg file
+#  template: src=harbor.cfg dest= owner=root group=root

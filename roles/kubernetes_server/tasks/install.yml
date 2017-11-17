@@ -12,7 +12,7 @@
   with_fileglob:
   - main_program/*.tar.gz
   register: kube_program
-- unarchive: src={{ kube_program.results[0].dest }} dest={{ source_path }} copy=no
+- unarchive: src={{ source_path }}/{{ kube_program.results[0].item | basename }} dest={{ source_path }} copy=no
 - name: install kube-apiserver
   copy:
     src: "{{ source_path }}/kubernetes/server/bin/kube-apiserver"

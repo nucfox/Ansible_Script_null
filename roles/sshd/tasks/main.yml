@@ -16,14 +16,14 @@
   register: ssh_program
 - file:
   args:
-    path: "{{ source_path }}/{{ ssh_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ source_path }}/{{ ssh_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     state: absent
   when: whether_repeat_install
 - unarchive:
-    src: "{{ ssh_program.results[0].dest }}"
+    src: "{{ source_path }}/{{ ssh_program.results[0].item | basename }}"
     dest: "{{ source_path }}"
     copy: no
-    creates: "{{ source_path }}/{{ ssh_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    creates: "{{ source_path }}/{{ ssh_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
   register: ssh_ua_program
 - name: register SSH version
   command: /usr/bin/ssh -V
@@ -37,11 +37,11 @@
 - name: install ssh server
   shell: "./configure  --with-zlib --with-ssl-dir --with-pam --bindir=/usr/bin  --sbindir=/usr/sbin --sysconfdir=/etc/ssh  && make -j4 && make install"
   args:
-    chdir: "{{ source_path }}/{{ ssh_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    chdir: "{{ source_path }}/{{ ssh_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
   when: ssh_ua_program.skipped is undefined
 - name: provides sshd init.d file
   copy: 
-    src: "{{ source_path }}/{{ ssh_program.results[0].dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/contrib/redhat/sshd.init"
+    src: "{{ source_path }}/{{ ssh_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/contrib/redhat/sshd.init"
     dest: /etc/init.d
     owner: root
     group: root

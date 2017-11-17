@@ -6,5 +6,5 @@
   register: java_program
 - name: "installation"
   yum:
-    name: "{{ java_program.results[0].dest }}"
+    name: "{{ source_path }}/{{ java_program.results[0].item | basename }}"
 - include: java-env.yml
