@@ -45,3 +45,4 @@ cp -f pem/ca*pem pem/flanneld*pem ../roles/flannel/files/pem/
 cp -f pem/ca*pem pem/kubernetes*pem ../roles/kubernetes_server/files/pem/
 cp -f pem/ca*pem pem/kube-proxy*pem ../roles/kubernetes_node/files/pem/
 cp -f pem/ca*pem pem/harbor*pem ../roles/harbor/files/pem/
+cp -f pem/ca.pem ../roles/distribution_harbor_key/files/pem/

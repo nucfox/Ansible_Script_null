@@ -29,5 +29,5 @@
   with_fileglob:
   - pem/harbor*pem
 
-#- name: copy harbor.cfg file
-#  template: src=harbor.cfg dest= owner=root group=root
+- name: copy harbor.cfg file
+  template: src=harbor.cfg dest={{ install_path }}/harbor owner=root group=root

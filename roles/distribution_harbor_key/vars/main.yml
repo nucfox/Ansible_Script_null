@@ -1,0 +1,5 @@
+---
+harbor_ca_ssl_path: /etc/docker/certs.d
+harbor_ca_ssl_full_path: "{{ harbor_ca_ssl_path }}/{{ harbor_server }}"
+harbor_user: admin
+harbor_passwd: Harbor12345

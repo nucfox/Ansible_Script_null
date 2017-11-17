@@ -1,0 +1,8 @@
+- file:
+  args:
+    path: "{{ harbor_ca_ssl_full_path }}"
+    state: directory
+- name: copy ca pem
+  copy: src=pem/ca.pem dest={{ harbor_ca_ssl_full_path }}/ca.crt
+- name: login harbor
+  shell: "docker login {{ harbor_server }} -u {{ harbor_user }} -p {{ harbor_passwd }}"

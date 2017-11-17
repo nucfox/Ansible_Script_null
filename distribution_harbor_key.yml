@@ -1,0 +1,6 @@
+- hosts: [10.100.57.54,10.100.57.55,10.100.57.56,10.100.57.58]
+  remote_user: root
+  roles:
+  - distribution_harbor_key
+  vars:
+    harbor_server: 10.100.57.58
