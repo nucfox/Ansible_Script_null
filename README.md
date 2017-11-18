@@ -1,11 +1,5 @@
 # distribution_harbor_key角色
 该角色需要先制作证书并部署完Harbor,只是简单的分发签署harbor的CA证书到服务器,并自动登陆</br>
-|变量|说明|
-|----|----|
-|harbor_server|arbor服务器|
-|harbor_user|harbor用户名,默认为admin|
-|harbor_passwd|harbor登陆密码,默认为Harbor12345|
-根据实际情况修改
 ###### [关于证书定义](https://github.com/uufengfeng/Ansible_Script_null/tree/master/cfssl)
 # docker_compose角色
 [官方github](https://github.com/docker/compose)
