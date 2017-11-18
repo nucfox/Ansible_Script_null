@@ -1,1 +1,3 @@
 harbor_server: hostNULL
+harbor_user: admin
+harbor_passwd: Harbor12345

@@ -4,3 +4,5 @@
   - distribution_harbor_key
   vars:
     harbor_server: 10.100.57.58
+    harbor_user: admin
+    harbor_passwd: Harbor12345
