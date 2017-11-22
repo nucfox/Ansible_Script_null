@@ -1,3 +1,5 @@
+Personal practice use</br>
+个人练习用</br>
 # distribution_harbor_key角色
 该角色需要先制作证书并部署完Harbor,只是简单的分发签署harbor的CA证书到服务器,并自动登陆</br>
 ###### [关于证书定义](https://github.com/uufengfeng/Ansible_Script_null/tree/master/cfssl)
