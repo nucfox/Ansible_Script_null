@@ -1,2 +1,5 @@
 ---
 FI: 0
+# yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+# # yum list docker-ce --showduplicates | sort -r
+DOCKER_VERSION: docker-ce-17.06.1.ce

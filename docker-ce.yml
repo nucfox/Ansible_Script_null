@@ -4,4 +4,4 @@
   - docker-ce
   vars:
     FI: 0
-
+    DOCKER_VERSION: docker-ce-17.06.1.ce
