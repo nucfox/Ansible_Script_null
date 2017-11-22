@@ -7,10 +7,12 @@
 这是Harbor前置准备</br>
 # Harbor角色
 [官方github](https://github.com/vmware/harbor)</br>
+[关于k8s使用私有库](https://github.com/uufengfeng/Ansible_Script_null/tree/master/examples/harbor)</br>
 下载官方离线包到roles/harbor/files/main_program</br>
 执行这个角色只是进行前期准备,最终安装需要手动执行</br>
 模板根据实际情况自行调整,默认定义了ssl密钥,服务器默认为部署节点的IP地址,协议使用https</br>
 ###### [关于证书定义](https://github.com/uufengfeng/Ansible_Script_null/tree/master/cfssl)
+###### [关于k8s使用harbor]()
 ## 1.安装
 * 进入解压的harbor目录
 * 导入离线安装包
