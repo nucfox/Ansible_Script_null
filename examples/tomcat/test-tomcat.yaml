@@ -1,0 +1,36 @@
+apiVersion: v1 
+kind: Pod
+metadata: 
+  name: test-tomcat
+  labels:
+    name: test-tomcat
+spec:
+  containers:
+  - name: test-webapps
+    image: 10.100.57.58/test/fotongratour:v1.0
+    imagePullPolicy: "Always"
+    volumeMounts:
+      - mountPath: /u06/tomcat/webapps
+        name: app
+  - name: tomcat
+    image: 10.100.57.58/test/tomcat:7-jdk7
+    resources:
+      requests:
+        cpu: 2
+        memory: 4Gi
+      limits:
+        cpu: 4
+        memory: 6Gi
+    ports:
+      - containerPort: 8080
+    env:
+      - name: K8S_ENV_JAVA_OPTS
+        value: "-server -Xms4g -Xmx4g"
+    volumeMounts:
+      - mountPath: /usr/local/tomcat/webapps
+        name: app
+  imagePullSecrets:
+    - name: myregistrykey
+  volumes:
+   - name: app
+     emptyDir: {}

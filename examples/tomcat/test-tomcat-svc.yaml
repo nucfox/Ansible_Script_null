@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-tomcat
+  labels:
+    name: test-tomcat
+spec:
+  selector:
+    name: test-tomcat
+  type: NodePort
+  ports:
+  - port: 8080
+    nodePort: 8480
