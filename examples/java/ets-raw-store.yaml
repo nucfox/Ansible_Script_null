@@ -1,0 +1,36 @@
+apiVersion: v1 
+kind: Pod
+metadata: 
+  name: test-raw-store
+  labels:
+    name: test-raw-store
+spec:
+  containers:
+  - name: test-java
+    image: 10.100.57.58/test/etsv5-raw-store:v5.5.1
+    resources:
+      requests:
+        cpu: 2
+        memory: 2Gi
+      limits:
+        cpu: 4
+        memory: 4Gi
+    env:
+      - name: K8S_ENV_JAVA_OPTS
+        value: "-server -Duser.timezone=Asia/Beijing -Xms2g -Xmx2g -XX:PermSize=64m -XX:MaxPermSize=64m"
+    imagePullPolicy: "Always"
+    volumeMounts:
+    - name: config-volume
+      mountPath: /u06/config.d
+    - name: ceph-vol1
+      mountPath: /u06/ets_data
+      readOnly: false
+  imagePullSecrets:
+    - name: myregistrykey
+  volumes:
+  - name: config-volume
+    configMap:
+      name: ets-raw-store-v0.1
+  - name: ceph-vol1
+    persistentVolumeClaim:
+      claimName: cephfs-claim

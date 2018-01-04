@@ -1,0 +1,32 @@
+kind: ConfigMap
+apiVersion: v1
+data:
+  app.raw.store.json: |-
+    {
+    "sys":{
+    "name": "RawStore",
+    "version": "5.2.1",
+    "deploy": "40-rawstore_produce_testk8s",
+    "update": "2017-07-18 21:42:03",
+    "rpc":{
+                "enable": "false",
+                "host": "127.0.0.1",
+                "port": 9000
+          }      
+       },
+
+    "app":{
+    "buf.size": 6553600,
+    "raw.store.path": "/u06/ets_data",
+    "raw.mq.type": "kafka",
+    "raw.mq.addr": "10.100.58.212:2184",
+    "filter.up.cmdId": "",
+    "filter.down.cmdId": ""
+          }
+
+    }  
+metadata:
+  name: ets-raw-store-v0.1
+  namespace: default
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile

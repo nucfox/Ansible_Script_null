@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ceph-raw-store-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  rbd:
+    monitors:
+      - 10.100.57.60:6789
+      - 10.100.57.57:6789
+      - 10.100.57.56:6789
+    pool: rbd
+    image: ceph-raw-store
+    user: admin
+    secretRef:
+      name: ceph-secret
+    fsType: xfs
+    readOnly: false
+  persistentVolumeReclaimPolicy: Recycle
