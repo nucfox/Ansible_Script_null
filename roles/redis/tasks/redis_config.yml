@@ -31,6 +31,7 @@
       *        hard            nproc      65536
       *        soft            nofile      65536
       *        hard            nofile      65536
+  when: modify_limits
 - name: register limits.d file
   command: ls /etc/security/limits.d
   register: limitsF
@@ -39,3 +40,4 @@
     dest: "/etc/security/limits.d/{{ limitsF.stdout_lines[0] }}"
     regexp: '(^\*\s+soft\s+nproc\s+4096)'
     replace: '#\1'
+  when: modify_limits

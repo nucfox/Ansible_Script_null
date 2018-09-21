@@ -1,9 +1,10 @@
 ---
 redis_user: redis
 #redis_path: /usr/local
-redis_path: /u06/app
+redis_path: /u01/app
 source_path: /usr/local/src
-link_path: /usr/local/redis
+link_path: /u01/usr/redis6379
 whether_repeat_install: true
+modify_limits: false
 
 bind_ip: "{{ ansible_default_ipv4.address }}"

@@ -1,6 +1,6 @@
 ---
 - name: creat redis user
-  user: name={{ redis_user }} append="yes" shell=/bin/false createhome=no
+  user: name={{ redis_user }} append="yes" shell=/sbin/nologin createhome=no
 - name: copy redis Source package
   copy: src={{ item }} dest={{ source_path }}
   with_fileglob:
@@ -9,6 +9,6 @@
 - command: ls "{{ link_path }}"
   register: lslink
   ignore_errors: true
-- include: redis_install.yml
+- import_tasks: redis_install.yml
   when: whether_repeat_install or lslink|failed
-- include: redis_config.yml
+- import_tasks: redis_config.yml

@@ -10,6 +10,10 @@
     chdir: "{{ source_path }}/{{ redis_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
 - file:
   args:
+    path: "{{ link_path | dirname }}"
+    state: directory
+- file:
+  args:
     src: "{{ redis_path }}/{{ redis_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     path: "{{ link_path }}"
     state: link
