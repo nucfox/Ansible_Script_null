@@ -1,14 +1,62 @@
-- name: copy harbor package
-  copy: src={{ item }} dest={{ source_path }}
-  with_fileglob:
-  - main_program/*.tgz
-  register: harbor_program
+- name: get nginx_upstream_check_module
+  get_url:
+    url: https://codeload.github.com/yaoweibin/nginx_upstream_check_module/zip/master
+    dest: "{{ source_path }}"
+  register: nginx_upstream_check_module_name
+- name: get nginx-sticky-module-ng
+  get_url:
+    url: https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng/get/master.tar.gz
+    dest: "{{ source_path }}"
+  register: nginx_sticky_module_ng_name
+- name: get nginx.tar.gz
+  get_url:
+    url: http://nginx.org/download/nginx-1.12.2.tar.gz
+    dest: "{{ source_path }}"
+  register: nginx_name
 - debug:
-    var: harbor_program.results[0].item
-- set_fact: dest_var={{ harbor_program.results[0].item | basename }}
+    var: nginx_sticky_module_ng_name
+    verbosity: 2
 - debug:
-    var: dest_var
-- unarchive: src={{ source_path }}/{{ harbor_program.results[0].item | basename }} dest={{ source_path }} copy=no
+    var: nginx_upstream_check_module_name
+    verbosity: 2
+- debug:
+    var: nginx_name
+    verbosity: 2
+- debug:
+    msg: "{{ nginx_upstream_check_module_name.dest | basename | regex_replace('^(.*).zip$', '\\1') }}"
+    verbosity: 2
+- debug:
+    msg: "{{ nginx_sticky_module_ng_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    verbosity: 2
+- debug:
+    msg: "{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    verbosity: 2
+- name: unarchive nginx_upstream_check_module
+  unarchive:
+    src: "{{ source_path }}/{{ nginx_upstream_check_module_name.dest | basename }}"
+    dest: "{{ source_path }}"
+    copy: "no"
+- name: unarchive nginx_sticky_module_ng
+  unarchive:
+    src: "{{ source_path }}/{{ nginx_sticky_module_ng_name.dest | basename }}"
+    dest: "{{ source_path }}"
+    copy: "no"
+- name: unarchive nginx
+  unarchive:
+    src: "{{ source_path }}/{{ nginx_name.dest | basename }}"
+    dest: "{{ source_path }}"
+    copy: "no"
+#- name: copy harbor package
+#  copy: src={{ item }} dest={{ source_path }}
+#  with_fileglob:
+#  - main_program/*.tgz
+#  register: harbor_program
+#- debug:
+#    var: harbor_program.results[0].item
+#- set_fact: dest_var={{ harbor_program.results[0].item | basename }}
+#- debug:
+#    var: dest_var
+#- unarchive: src={{ source_path }}/{{ harbor_program.results[0].item | basename }} dest={{ source_path }} copy=no
 #- unarchive: src=/usr/local/src/test.tgz dest={{ source_path }} copy=no
 
 #- name: delegate_to and run_once

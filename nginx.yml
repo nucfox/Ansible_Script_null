@@ -1,4 +1,7 @@
-- hosts: 172.17.118.33
+- hosts: 172.17.118.37
   remote_user: root
+  vars:
+    nginx_version: nginx-1.12.2
+    upstream_check_version: check_1.12.1+
   roles:
   - nginx

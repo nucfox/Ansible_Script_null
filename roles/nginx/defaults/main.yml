@@ -1,0 +1,2 @@
+nginx_version: nginx-1.12.2
+upstream_check_version: check_1.12.1+

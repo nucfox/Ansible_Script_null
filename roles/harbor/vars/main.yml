@@ -1,5 +1,5 @@
 source_path: /usr/local/src
-install_path: /u06/root
+install_path: /u01/root
 
 ca_ssl_path: /etc/kubernetes/ssl
 harbor_ssl_path: /etc/harbor/ssl

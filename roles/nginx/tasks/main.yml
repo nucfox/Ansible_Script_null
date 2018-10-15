@@ -1,6 +1,8 @@
 - name: Installation dependencies NGINX
   yum: name="{{ item }}" state="latest"
-  with_items: 
+  with_items:
+  - unzip
+  - patch
   - pcre
   - pcre-devel
   - zlib
@@ -11,31 +13,80 @@
   - openssl-devel
 - name: creat nginx user
   user: name={{ nginx_user }} append="yes"
-- name: copy nginx Source package
-  copy: src={{ item }} dest={{ source_path }}
-  with_fileglob:
-  - main_program/*.tar.gz
-  register: nginx_program
-- file:
+#- name: copy nginx Source package
+#  copy: src={{ item }} dest={{ source_path }}
+#  with_fileglob:
+#  - main_program/*.tar.gz
+#  register: nginx_program
+#- file:
+#  args:
+#    path: "{{ source_path }}/{{ nginx_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+#    state: absent
+#  when: whether_repeat_install
+- name: get nginx_upstream_check_module
+  get_url:
+    url: https://codeload.github.com/yaoweibin/nginx_upstream_check_module/zip/master
+    dest: "{{ source_path }}"
+  register: nginx_upstream_check_module_name
+- name: get nginx-sticky-module-ng
+  get_url:
+    url: https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng/get/master.tar.gz
+    dest: "{{ source_path }}"
+  register: nginx_sticky_module_ng_name
+- name: get nginx.tar.gz
+  get_url:
+    url: "http://nginx.org/download/{{ nginx_version }}.tar.gz"
+    dest: "{{ source_path }}"
+  register: nginx_name
+- debug:
+    var: nginx_sticky_module_ng_name
+    verbosity: 2
+- debug:
+    var: nginx_upstream_check_module_name
+    verbosity: 2
+- debug:
+    var: nginx_name
+    verbosity: 2
+- debug:
+    msg: "{{ nginx_upstream_check_module_name.dest | basename | regex_replace('^(.*).zip$', '\\1') }}"
+    verbosity: 2
+- debug:
+    msg: "{{ nginx_sticky_module_ng_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    verbosity: 2
+- debug:
+    msg: "{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    verbosity: 2
+- name: unarchive nginx_upstream_check_module
+  unarchive:
+    src: "{{ source_path }}/{{ nginx_upstream_check_module_name.dest | basename }}"
+    dest: "{{ source_path }}"
+    copy: "no"
+- name: unarchive nginx_sticky_module_ng
+  unarchive:
+    src: "{{ source_path }}/{{ nginx_sticky_module_ng_name.dest | basename }}"
+    dest: "{{ source_path }}"
+    copy: "no"
+- name: unarchive nginx
+  unarchive:
+    src: "{{ source_path }}/{{ nginx_name.dest | basename }}"
+    dest: "{{ source_path }}"
+    copy: "no"
+- name: patch nginx_upstream_check_module
+  shell: "patch -p1 < ../{{ nginx_upstream_check_module_name.dest | basename | regex_replace('^(.*).zip$', '\\1') }}/{{ upstream_check_version }}.patch"
   args:
-    path: "{{ source_path }}/{{ nginx_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
-    state: absent
-  when: whether_repeat_install
-- unarchive: src={{ source_path }}/{{ nginx_program.results[0].item | basename }} dest={{ source_path }} copy=no
-  register: nginx_ua_program
+    chdir: "{{ source_path }}/{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
 - name: install nginx_server
-  shell: "./configure --prefix={{ nginx_path }}/{{ nginx_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module --with-http_realip_module --with-http_sub_module && make -j4 && make install"
+  shell: "./configure --prefix={{ nginx_path }}/{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module --with-http_realip_module --with-http_sub_module --add-module={{ source_path }}/{{ nginx_upstream_check_module_name.dest | basename | regex_replace('^(.*).zip$', '\\1') }}/ --add-module={{ source_path }}/{{ nginx_sticky_module_ng_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} && make -j2 && make install"
   args:
-    chdir: "{{ source_path }}/{{ nginx_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
-  when: nginx_ua_program.skipped is undefined
+    chdir: "{{ source_path }}/{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
 - name: check if /usr/local/nginx exists
   find:
     paths: "{{ link_path }}"
   register: result_nginxlink
-- name: "link {{ nginx_path }}/{{ nginx_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }} to {{ link_path }}"
+- name: "link {{ nginx_path }}/{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} to {{ link_path }}"
   file:
   args:
-    src: "{{ nginx_path }}/{{ nginx_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    src: "{{ nginx_path }}/{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     path: "{{ link_path }}"
     state: link
     owner: "{{ nginx_user }}"
@@ -48,18 +99,18 @@
 - name: provides nginx config
   template: 
    src: nginx.conf 
-   dest: "{{ nginx_path }}/{{ nginx_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/conf"
+   dest: "{{ nginx_path }}/{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/conf"
    owner: "{{ nginx_user }}"
    group: "{{ nginx_user }}"
 - file:
   args:
-    path: "{{ nginx_path }}/{{ nginx_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/conf/conf.d"
+    path: "{{ nginx_path }}/{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/conf/conf.d"
     state: directory
     owner: "{{ nginx_user }}"
     group: "{{ nginx_user }}"
 - file:
   args:
-    path: "{{ nginx_path }}/{{ nginx_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
+    path: "{{ nginx_path }}/{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     state: directory
     recurse: yes
     owner: "{{ nginx_user }}"

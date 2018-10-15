@@ -1,5 +1,11 @@
-- name: start zabbix_agentd
+- name: start_zabbix_agentd_6
   service:
     enabled: yes
     name: zabbix_agentd
     state: restarted
+- name: start_zabbix_agentd_7
+  systemd:
+    name: zabbix_agentd
+    enabled: yes
+    state: restarted
+    daemon_reload: yes

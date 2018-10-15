@@ -1,4 +1,9 @@
 ---
+- name: Installation dependencies zabbix-agent
+  yum: name="{{ item }}" state="latest"
+  with_items:
+  - pcre
+  - pcre-devel
 - name: creat zabbix user
   user: name={{ zabbix_user }} append="yes"
 - name: copy zabbix Source package
@@ -14,10 +19,17 @@
 - unarchive: src={{ source_path }}/{{ zabbix_program.results[0].item | basename }} dest={{ source_path }} copy=no
   register: zabbix_ua_program
 - name: install zabbix_agentd
-  shell: "./configure --prefix={{ zabbix_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --enable-agent  && make -j4 && make install"
+  shell: "./configure --prefix={{ zabbix_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --enable-agent  && make -j2 && make install"
   args:
     chdir: "{{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
-  when: zabbix_ua_program.skipped is undefined and zabbix_agentd_ip != zabbix_server
+  when: (zabbix_ua_program.skipped is undefined and zabbix_agentd_ip != zabbix_server) or
+        zabbix_agent_in_ser
+
+- file:
+  args:
+    path: "{{ link_path | dirname }}"
+    state: directory
+
 - file:
   args:
     src: "{{ zabbix_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
@@ -25,7 +37,8 @@
     state: link
     owner: "{{ zabbix_user }}"
     group: "{{ zabbix_user }}"
-  when: zabbix_ua_program.skipped is undefined and zabbix_agentd_ip != zabbix_server
+  when: (zabbix_ua_program.skipped is undefined and zabbix_agentd_ip != zabbix_server) or
+        zabbix_agent_in_ser
 - name: copy zabbix_agent init
   copy:
     src: "{{ source_path }}/{{ zabbix_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/misc/init.d/fedora/core/zabbix_agentd"
@@ -44,7 +57,15 @@
   tags:
   - zabbix_agentd.conf
   notify:
-  - start zabbix_agentd
+  - start_zabbix_agentd_6
+  when: ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "6"
+- name: provides zabbix_agentd.conf
+  template: src="zabbix_agentd.conf" dest="{{ link_path }}/etc/" owner={{ zabbix_user }} group={{ zabbix_user }}
+  tags:
+  - zabbix_agentd.conf
+  notify:
+  - start_zabbix_agentd_7
+  when: ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "7"
 - name: copy moniter script
   copy: src="customsh" dest="{{ link_path }}/" owner={{ zabbix_user }} group={{ zabbix_user }} mode="0775" force="yes"
 - name: copy UserParameters
