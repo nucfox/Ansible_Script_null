@@ -1,3 +1,5 @@
+string: ABCdef
+
 source_path: /usr/local/src
 
 testvar: "elastic_vehicle_{{ ansible_default_ipv4.address | regex_replace('^.*\\.(.*)\\.(.*)$', '\\1\\2') }}"
