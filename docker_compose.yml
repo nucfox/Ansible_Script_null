@@ -1,5 +1,7 @@
-- hosts: [10.100.57.58]
+- hosts: [172.17.118.33]
   remote_user: root
+  vars:
+    compose_version: "1.22.0"
+    force_dc: true
   roles:
   - docker_compose
-#force_dc: true

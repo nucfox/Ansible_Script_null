@@ -1,7 +1,6 @@
 ---
-- name: copy docker compose binary
-  copy:
-    src: main_program/docker-compose
-    dest: "{{ compose_path }}/docker-compose"
+- name: install docker compose binary
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ compose_version }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+    dest: /usr/local/bin/docker-compose
     mode: 0755
-

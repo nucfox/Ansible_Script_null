@@ -39,11 +39,11 @@
   become_user: root
   become_method: sudo
 
-- name: clear iptables rules and chains
-  shell: "iptables -P INPUT ACCEPT && iptables -F && iptables -X && iptables -F -t nat && iptables -X -t nat"
-  become: true
-  become_user: root
-  become_method: sudo
+#- name: clear iptables rules and chains
+#  shell: "iptables -P INPUT ACCEPT && iptables -F && iptables -X && iptables -F -t nat && iptables -X -t nat"
+#  become: true
+#  become_user: root
+#  become_method: sudo
 
 - name: provides daemon.json file
   template: src=daemon.json dest=/etc/docker

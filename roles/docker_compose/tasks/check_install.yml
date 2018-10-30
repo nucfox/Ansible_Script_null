@@ -1,7 +1,7 @@
 ---
 - name: Check whether the installation of docker_compose
-  command: "{{ compose_path }}/docker-compose version"
+  command: "/usr/local/bin/docker-compose version"
   register: result
   ignore_errors: true
 - import_tasks: install.yml
-  when: result|failed or force_dc
+  when: result is failed or force_dc
