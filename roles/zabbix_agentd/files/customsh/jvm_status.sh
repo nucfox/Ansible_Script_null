@@ -1,5 +1,7 @@
 #!/bin/bash
-PATH=/usr/java/jdk1.7.0_45/bin:/usr/lib64/qt-3.3/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin:/root/bin
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:~/sbin:~/bin
+source /etc/profile
+
 _NAME=$1
 Jcase=`echo $2 | tr [a-z] [A-Z]`
 _CLASS=`echo $3 | tr [a-z] [A-Z]`

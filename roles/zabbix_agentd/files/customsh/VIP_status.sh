@@ -1,7 +1,9 @@
 #!/bin/bash
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:~/bin:~/sbin
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:~/sbin:~/bin
+source /etc/profile
 
-VIP=10.100.58.231
+#example: VIP=10.108.1.15
+VIP=VIPaddr
 
 keepalived_conf="/etc/keepalived/keepalived.conf"
 

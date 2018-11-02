@@ -2,7 +2,8 @@
 # Script to fetch nginx statuses for tribily monitoring systems  
 # Author: xiaoluo 
 # License: GPLv2  
-PATH=/usr/java/default/bin:/usr/lib64/qt-3.3/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin:/root/bin
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:~/sbin:~/bin
+source /etc/profile
 
 Jcase=`echo $1 | tr "[A-Z]" "[a-z]"` 
 _IP=$2

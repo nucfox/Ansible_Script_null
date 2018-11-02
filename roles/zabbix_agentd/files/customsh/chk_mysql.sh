@@ -13,16 +13,16 @@
 # License:     GPL
 
 # User name
-MYSQL_USER='root'
+MYSQL_USER='user'
  
 # password
-MYSQL_PWD='ycadmin_1001'
+MYSQL_PWD='password'
  
 # Host address /IP
-MYSQL_HOST='10.100.58.211'
+MYSQL_HOST='addr'
  
 # port
-MYSQL_PORT='3306'
+MYSQL_PORT='port'
 
 # Mysqladmin command path
 _Mysqladmin=/usr/local/mysql/bin/mysqladmin

@@ -1,4 +1,4 @@
-- hosts: [172.17.118.33]
+- hosts: [172.17.118.32,172.17.118.35]
   remote_user: root
   vars:
     compose_version: "1.22.0"

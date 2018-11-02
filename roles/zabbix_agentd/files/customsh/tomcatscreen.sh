@@ -1,5 +1,6 @@
 #!/bin/bash
-PATH=/usr/java/default/bin:/usr/lib64/qt-3.3/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin:/root/bin
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:~/sbin:~/bin
+source /etc/profile
 
 TOMCATpage=$(ps -e -o "pid args" | grep tmpdir=.*tomcat.*/temp | egrep -v "grep|tomcatscreen")
 #TOMCAT_PID=($(echo "$TOMCATpage" | gawk '{print $1}'))

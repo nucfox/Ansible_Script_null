@@ -1,9 +1,10 @@
 #!/bin/bash
 
-PATH=/usr/java/jdk1.7.0_45/bin:/usr/lib64/qt-3.3/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin:/root/bin
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:~/sbin:~/bin
+source /etc/profile
 
 #function JAVALIST(){
-JAVApage=$(ps -e -o "pid,args"|egrep java | egrep ets[^/]*-[^/]*\.jar | sed -n 's/.*\(etsv.*\.jar\).*/\1/p')
+JAVApage=$(ps -e -o "pid,args"|egrep java | egrep ace[^/]*-[^/]*\.jar | sed -n 's/.*\(ace.*\.jar\).*/\1/p')
 #JAVA_PID=($(echo "$JAVApage" | gawk '{print $1}'))
 #JAVA_NAME=($(echo "$JAVApage" | gawk '{print $2}' |sed s/.jar$//g | sed 's/\(.\)\{14\}$//'))
 #JAVA_NAME=($(echo "$JAVApage"  |sed s/.jar$//g | sed 's/\(.\)\{14\}$//'))

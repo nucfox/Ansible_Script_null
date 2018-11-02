@@ -1,4 +1,7 @@
 #!/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:~/sbin:~/bin
+source /etc/profile
+
 redis_cli_path="/usr/local/bin/redis-cli"
 while getopts "p:k:P:" opt
 do
