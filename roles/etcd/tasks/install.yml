@@ -3,7 +3,7 @@
   user:
     name: "{{ etcd_user }}"
     comment: "etcd user"
-    create_home: no
+    createhome: no
     shell: /sbin/nologin
     append: yes
 - name: geturl method
