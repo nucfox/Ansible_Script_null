@@ -4,6 +4,6 @@
   register: result
   ignore_errors: true
 - import_tasks: install.yml
-  when: (etcd_stated == "install") and (result|failed)
+  when: (etcd_stated == "install") or (result is failed)
 - import_tasks: remove.yml
   when: etcd_stated == "remove"
