@@ -1,9 +1,10 @@
 ---
-- name: Check whether the installation of ETCD
-  command: "{{ etcd_path }}/etcdctl"
-  register: result
-  ignore_errors: true
+#- name: Check whether the installation of ETCD
+#  command: "{{ etcd_path }}/etcdctl"
+#  register: result
+#  ignore_errors: true
 - import_tasks: install.yml
-  when: (etcd_stated == "install") or (result is failed)
+  when: etcd_stated == "install"
+#  when: (etcd_stated == "install") or (result is failed)
 - import_tasks: remove.yml
   when: etcd_stated == "remove"

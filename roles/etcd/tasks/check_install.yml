@@ -1,8 +1,0 @@
----
-- name: Check whether the installation of ETCD
-  command: "{{ etcd_path }}/etcdctl"
-  register: result
-  ignore_errors: true
-- include: install.yml
-  static: no
-  when: result|failed

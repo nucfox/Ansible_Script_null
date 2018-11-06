@@ -1,11 +1,11 @@
-- hosts: [10.100.57.55,10.100.57.56]
+- hosts: [etcd_cluster]
   remote_user: root
   roles:
   - etcd
   vars:
     etcd_stated: install
     ETCD_VER: v3.3.10
-    getfile_method: geturl
+    getfile_method: copyfile
   vars_files:
   - global_vars/kubernetes.yml
 # install or remove
