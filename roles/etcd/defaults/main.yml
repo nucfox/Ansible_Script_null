@@ -1,1 +1,3 @@
 etcd_stated: install
+getfile_method: geturl
+ETCD_VER: v3.3.10

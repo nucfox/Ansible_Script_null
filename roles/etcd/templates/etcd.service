@@ -9,7 +9,7 @@ Documentation=https://github.com/coreos
 Type=notify
 WorkingDirectory={{ data_path }}/
 EnvironmentFile=-{{ config_path }}/etcd.conf
-User=etcd
+User={{ etcd_user }}
 # set GOMAXPROCS to number of processors
 ExecStart=/bin/bash -c "GOMAXPROCS=$(nproc) /usr/bin/etcd \
 --name=${ETCD_NAME} \

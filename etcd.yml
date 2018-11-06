@@ -4,6 +4,7 @@
   - etcd
   vars:
     etcd_stated: install
+    ETCD_VER: v3.3.10
   vars_files:
   - global_vars/kubernetes.yml
 # install or remove

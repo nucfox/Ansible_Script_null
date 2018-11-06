@@ -1,7 +1,9 @@
 ---
-- include: check_install.yml
-  static: no
-  when: etcd_stated == "install"
-- include: remove.yml
-  static: no
+- name: Check whether the installation of ETCD
+  command: "{{ etcd_path }}/etcdctl"
+  register: result
+  ignore_errors: true
+- import_task: install.yml
+  when: (etcd_stated == "install") and (result|failed)
+- import_task: remove.yml
   when: etcd_stated == "remove"

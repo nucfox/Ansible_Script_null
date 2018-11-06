@@ -3,26 +3,15 @@
   user:
     name: "{{ etcd_user }}"
     comment: "etcd user"
-    home: /var/lib/etcd
+    create_home: no
     shell: /sbin/nologin
     append: yes
-- name: copy etcd package
-  copy: src={{ item }} dest={{ source_path }}
-  with_fileglob:
-  - main_program/*.tar.gz
-  register: etcd_program
-- unarchive: src={{ source_path }}/{{ etcd_program.results[0].item | basename }} dest={{ source_path }} copy=no
-- name: install etcd
-  copy:
-    src: "{{ source_path }}/{{ etcd_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/etcd"
-    dest: "{{ etcd_path }}"
-    mode: 0755
-    remote_src: True
-- copy:
-    src: "{{ source_path }}/{{ etcd_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/etcdctl"
-    dest: "{{ etcd_path }}"
-    mode: 0755
-    remote_src: True
+- name: geturl method
+  import_task: geturl.yml
+  when: getfile_method == 'geturl'
+- name: copyfile method
+  import_task: copyfile.yml
+  when: getfile_method == 'copyfile'
 
 - file:
   args:
@@ -31,37 +20,46 @@
     owner: "{{ etcd_user }}"
     group: "{{ etcd_user }}"
     mode: 0755
-
 - file:
   args:
     path: "{{ config_path }}"
     state: directory
-
 - file:
   args:
     path: "{{ etcd_ssl_path }}"
     state: directory
-
 - file:
   args:
     path: "{{ ca_ssl_path }}"
     state: directory
 
 - name: copy ca pem
-  copy: src={{ item }} dest={{ ca_ssl_path }}
+  copy:
+    src: "{{ item }}"
+    dest: "{{ ca_ssl_path }}"
   with_fileglob:
   - pem/ca*pem
-
 - name: copy etcd pem
-  copy: src={{ item }} dest={{ etcd_ssl_path }}
+  copy:
+    src: "{{ item }}"
+    dest: "{{ etcd_ssl_path }}"
   with_fileglob:
   - pem/etcd*pem
 
 - name: copy systemd file
-  template: src=etcd.service dest=/usr/lib/systemd/system owner=root group=root mode=0644
+  template:
+    src: etcd.service
+    dest: "/usr/lib/systemd/system"
+    owner: root
+    group: root
+    mode: 0644
   become: true
   become_user: root
   become_method: sudo
 - name: copy config file
-  template: src=etcd.conf dest={{ config_path }} owner=root group=root
-  notify: Start etcd
+  template:
+    src: etcd.conf
+    dest: "{{ config_path }}"
+    owner: root
+    group: root
+  notify: Start_etcd

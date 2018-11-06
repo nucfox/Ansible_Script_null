@@ -80,7 +80,7 @@ yum list docker-ce --showduplicates | sort -r
 默认:</br>
 DOCKER_VERSION: docker-ce-17.06.1.ce</br>
 如果FI: 0会强制安装,设为1 检测到安装了docker会停止安装</br>
-# etcd角色
+# [etcd角色](https://github.com/uufengfeng/Ansible_Script_null/tree/master/roles/etcd)
 配合k8s安装,证书需提前设置,脚本制作的安装版本为3.2.6</br>
 ###### [关于证书定义](https://github.com/uufengfeng/Ansible_Script_null/tree/master/cfssl)</br>
 # flannel角色

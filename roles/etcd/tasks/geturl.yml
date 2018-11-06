@@ -1,0 +1,22 @@
+- name: get ETCD
+  get_url:
+    url: "{{ DOWNLOAD_URL }}/{{ ETCD_VER }}/etcd-{{ ETCD_VER }}-linux-amd64.tar.gz"
+    dest: "{{ source_path }}"
+  register: etcd_name
+- name: unarchive etcd
+  unarchive:
+    src: "{{ source_path }}/{{ etcd_name.dest | basename }}"
+    dest: "{{ source_path }}"
+    copy: "no"
+- name: install etcd
+  copy:
+    src: "{{ source_path }}/{{ etcd_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/etcd"
+    dest: "{{ etcd_path }}"
+    mode: 0755
+    remote_src: True
+- copy:
+    src: "{{ source_path }}/{{ etcd_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}/etcdctl"
+    dest: "{{ etcd_path }}"
+    mode: 0755
+    remote_src: True
+
