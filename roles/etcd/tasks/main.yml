@@ -3,7 +3,7 @@
   command: "{{ etcd_path }}/etcdctl"
   register: result
   ignore_errors: true
-- import_task: install.yml
+- import_tasks: install.yml
   when: (etcd_stated == "install") and (result|failed)
-- import_task: remove.yml
+- import_tasks: remove.yml
   when: etcd_stated == "remove"

@@ -7,10 +7,10 @@
     shell: /sbin/nologin
     append: yes
 - name: geturl method
-  import_task: geturl.yml
+  import_tasks: geturl.yml
   when: getfile_method == 'geturl'
 - name: copyfile method
-  import_task: copyfile.yml
+  import_tasks: copyfile.yml
   when: getfile_method == 'copyfile'
 
 - file:
