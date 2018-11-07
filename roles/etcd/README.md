@@ -40,7 +40,7 @@
 **简介**  
 &emsp;日志是实现一致性协议的最重要手段.客户对应用发起的状态更新请求首先都会被记录在日志中,待主节点将更新日志在集群多数节点之间完成同步以后,便将该日志项内容在状态机中进行应用,进而便完成了一次客户的更新请求  
 ---
-#### [WAL](https://my.oschina.net/fileoptions/blog/1825531)
+#### [WAL](https://my.oschina.net/fileoptions/blog/1825531)  
 **简介**  
 &emsp;WAL是write ahead log的缩写,顾名思义,也就是在执行真正的写操作之前先写一个日志,可以类比redo log,和它相对的是WBL(write behind log),这些日志都会严格保证持久化,以保证整个操作的一致性和可恢复性  
 ---
@@ -64,3 +64,100 @@ etcd.yml
 global_vars/kubernetes.yml  
 roles/etcd/vars/main.yml  
 roles/etcd/defaults/main.yml  
+---
+#### [ETCDCTL使用](https://coreos.com/etcd/docs/latest/demo.html#get-by-prefix)  
+[参考文献](http://www.infoq.com/cn/articles/etcd-interpretation-application-scenario-implement-principle/)  
+&emsp;ETCDCTL全局变量ETCDCTL_API没有设置情况下,API为v2版本
+以下均采用v3版本
+```
+[root@example ~]# ETCDCTL_API=3 etcdctl version
+```
+&emsp;如果开启TLS认证,需设置证书
+```
+[root@example ~]# ETCDCTL_API=3 etcdctl \
+--cacert=/etc/ssl/kubernetes/ca.pem \
+--cert=/etc/ssl/etcd/etcd.pem \
+--key=/etc/ssl/etcd/etcd-key.pem
+或写入~/.bashrc
+alias etcdctl='ETCDCTL_API=3 etcdctl --cacert=/etc/ssl/kubernetes/ca.pem --cert=/etc/ssl/etcd/etcd.pem --key=/etc/ssl/etcd/etcd-key.pem'
+```
+&emsp;以下命令均是设置了alias
+```
+指定集群信息
+HOST_1=192.168.1.193
+HOST_2=192.168.1.6
+HOST_3=192.168.1.151
+ENDPOINTS=$HOST_1:2379,$HOST_2:2379,$HOST_3:2379
+```
+##### 集群状态
+```
+[root@example ~]# etcdctl --endpoints=$ENDPOINTS --write-out=table endpoint status
+```
+ENDPOINT|ID|VERSION|DB SIZE|IS LEADER|RAFT TERM|RAFT INDEX
+---|---|---|---|---|---|---
+https://192.168.1.193:2379|f45a2f696b57fc70|3.3.10|20 kB|false|3|20
+https://192.168.1.6:2379|50264fb9dee4eeea|3.3.10|20 kB|false|3|20
+https://192.168.1.151:2379|2d0c43c9eefddd69|3.3.10|20 kB|true|3|20
+```
+[root@example ~]# etcdctl --endpoints=$ENDPOINTS --write-out=table endpoint health
+https://192.168.1.193:2379 is healthy: successfully committed proposal: took = 3.748913ms
+https://192.168.1.151:2379 is healthy: successfully committed proposal: took = 1.001375ms
+https://192.168.1.6:2379 is healthy: successfully committed proposal: took = 1.347646ms
+```
+##### 集群成员
+    集群成员相关命令
+    member add	Adds a member into the cluster
+	member remove	Removes a member from the cluster
+	member update	Updates a member in the cluster
+	member list	Lists all members in the cluster
+```
+列出成员信息
+[root@example ~]# etcdctl --endpoints=$ENDPOINTS --write-out=table member list
+```
+ID|STATUS|NAME|PEER ADDRS|CLIENT ADDRS
+-|-|-|-|-
+2d0c43c9eefddd69|started|etcd-host2| https://192.168.1.151:2380|https://192.168.1.151:2379 
+50264fb9dee4eeea|started|etcd-host1|   https://192.168.1.6:2380|https://192.168.1.6:2379
+f45a2f696b57fc70|started|etcd-host0| https://192.168.1.193:2380|https://192.168.1.193:2379
+##### 增
+```
+etcdctl --endpoints=$ENDPOINTS put foo "Hello World"
+```
+##### 查
+```
+etcdctl --endpoints=$ENDPOINTS get foo
+etcdctl --endpoints=$ENDPOINTS -w json get foo
+
+#Get by prefix
+etcdctl --endpoints=$ENDPOINTS put web1 value1
+etcdctl --endpoints=$ENDPOINTS put web2 value2
+etcdctl --endpoints=$ENDPOINTS put web3 value3
+
+etcdctl --endpoints=$ENDPOINTS get web --prefix
+```
+##### 删
+```
+etcdctl --endpoints=$ENDPOINTS put key myvalue
+etcdctl --endpoints=$ENDPOINTS del key
+
+etcdctl --endpoints=$ENDPOINTS put k1 value1
+etcdctl --endpoints=$ENDPOINTS put k2 value2
+etcdctl --endpoints=$ENDPOINTS del k --prefix
+```
+##### 快照
+```
+获取数据快照
+etcdctl --endpoints=$ENDPOINTS snapshot save snapshot.db
+```
+
+```
+还原快照
+etcdctl snapshot restore snapshot.db --data-dir=/var/lib/etcd
+快照还原的目录不能存在,报错提示
+Error: data-dir "/var/lib/etcd" exists
+可以指定到别的目录,还原之后设置好权限,停止etcd然后拷贝
+```
+
+##### 参考
+[TLS](https://coreos.com/etcd/docs/latest/op-guide/security.html)  
+&emsp;讲解TLS认证,包括自动发现带TLS，curl使用TLS访问etcd api
