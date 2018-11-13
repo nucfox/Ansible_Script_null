@@ -1,11 +1,5 @@
 ---
-flannel_path: /usr/bin
+flannel_path: /usr/local/bin
 source_path: /usr/local/src
-flannel_ssl_path: /etc/flanneld/ssl
-ca_ssl_path: /etc/kubernetes/ssl
 
-ETCD_ENDPOINTS: https://10.100.57.54:2379,https://10.100.57.55:2379,https://10.100.57.56:2379
-FLANNEL_ETCD_PREFIX: /kubernetes/network
-CLUSTER_CIDR: 172.30.0.0/16
-
-delegation_etcd: 10.100.57.54
+DOWNLOAD_URL: https://github.com/coreos/flannel/releases/download

@@ -1,0 +1,23 @@
+---
+- name: copy flannel package
+  copy: 
+    src: "{{ item }}"
+    dest: "{{ source_path }}"
+  with_fileglob:
+  - main_program/*.tar.gz
+  register: flannel_program
+- unarchive:
+    src: "{{ source_path }}/{{ flannel_program.results[0].item | basename }}"
+    dest: "{{ source_path }}"
+    copy: no
+- name: install flannel
+  copy:
+    src: "{{ source_path }}/flanneld"
+    dest: "{{ flannel_path }}"
+    mode: 0755
+    remote_src: True
+- copy:
+    src: "{{ source_path }}/mk-docker-opts.sh"
+    dest: "{{ flannel_path }}"
+    mode: 0755
+    remote_src: True

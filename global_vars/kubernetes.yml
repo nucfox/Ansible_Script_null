@@ -1,17 +1,22 @@
-#delegates etcd execution
-delegation_etcd: 10.100.57.54
+# delegates etcd execution
+# delegation_etcd: 10.100.57.54
+
+# TLS CA cert
 ca_ssl_path: /etc/ssl/kubernetes
 
 # etcd
-ETCD_NODES: etcd-host0=https://10.100.57.54:2380,etcd-host1=https://10.100.57.55:2380,etcd-host2=https://10.100.57.56:2380
+ETCD_NODES: etcd-host0=https://192.168.1.193:2380,etcd-host1=https://192.168.1.6:2380,etcd-host2=https://192.168.1.151:2380
 CLUSTER_TOKEN: etcd-cluster-0
 NODE_IP: "{{ ansible_default_ipv4.address }}"
 etcd_ssl_path: "/etc/ssl/etcd"
 
 # flannel
-ETCD_ENDPOINTS: https://10.100.57.54:2379,https://10.100.57.55:2379,https://10.100.57.56:2379
+ETCD_ENDPOINTS: https://192.168.1.193:2379,https://192.168.1.6:2379,https://192.168.1.151:2379
 FLANNEL_ETCD_PREFIX: /kubernetes/network
 CLUSTER_CIDR: 172.30.0.0/16
+flannel_ssl_path: "/etc/ssl/flanneld"
+delegation_etcd: 192.168.1.193
+etcdctl_bin: /usr/local/bin
 
 # kubernetes_client
 KUBE_APISERVER: https://10.100.57.54:6443

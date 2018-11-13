@@ -1,7 +1,11 @@
-- hosts: [10.100.57.54,10.100.57.55,10.100.57.56]
+- hosts: [flannel_network]
   remote_user: root
   roles:
   - flannel
+  vars:
+    FLANNEL_VER: v0.10.0
+    getfile_method: geturl
   vars_files:
   - global_vars/kubernetes.yml
 # install or remove
+# geturl or copyfile

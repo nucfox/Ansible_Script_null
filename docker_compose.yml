@@ -1,7 +1,9 @@
-- hosts: [172.17.118.32,172.17.118.35]
+- hosts: [172.17.118.37]
   remote_user: root
   vars:
-    compose_version: "1.22.0"
+    compose_version: "1.23.1"
     force_dc: true
   roles:
   - docker_compose
+
+# https://github.com/docker/compose/releases
