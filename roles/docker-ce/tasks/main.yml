@@ -4,6 +4,5 @@
   register: docker_ce_IF
   ignore_errors: True
 
-- include: install.yml
-  static: no
-  when: docker_ce_IF|failed or FI|int == 1
+- import_tasks: install.yml
+  when: docker_ce_IF is failed or FI|int == 1
