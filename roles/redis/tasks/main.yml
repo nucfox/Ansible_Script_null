@@ -10,5 +10,5 @@
   register: lslink
   ignore_errors: true
 - import_tasks: redis_install.yml
-  when: whether_repeat_install or lslink|failed
+  when: whether_repeat_install or lslink is failed
 - import_tasks: redis_config.yml

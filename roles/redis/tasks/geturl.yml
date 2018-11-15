@@ -1,0 +1,11 @@
+---
+- name: get flannel
+  get_url:
+    url: "{{ DOWNLOAD_URL }}/{{ FLANNEL_VER }}/flannel-{{ FLANNEL_VER }}-linux-amd64.tar.gz"
+    dest: "{{ source_path }}"
+  register: flannel_name
+- name: unarchive flannel
+  unarchive:
+    src: "{{ source_path }}/{{ flannel_name.dest | basename }}"
+    dest: "{{ source_path }}"
+    copy: "no"
