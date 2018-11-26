@@ -12,6 +12,9 @@
 # Copyright:   2015 (c) DengYun
 # License:     GPL
 
+#PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:~/sbin:~/bin
+source /etc/profile
+
 # User name
 MYSQL_USER='user'
  
@@ -25,10 +28,10 @@ MYSQL_HOST='addr'
 MYSQL_PORT='port'
 
 # Mysqladmin command path
-_Mysqladmin=/usr/local/mysql/bin/mysqladmin
+_Mysqladmin=/bin/mysqladmin
 
 # MySQL command path
-_Mysql=/usr/local/mysql/bin/mysql
+_Mysql=/bin/mysql
 # data connection
 MYSQL_CONN="$_Mysqladmin -u${MYSQL_USER} -p${MYSQL_PWD} -h${MYSQL_HOST} -P${MYSQL_PORT}"
 MYSQL_sql="$_Mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h${MYSQL_HOST} -P${MYSQL_PORT}"
@@ -87,6 +90,16 @@ case $1 in
     VERSION)
 	$_Mysql -V
 	;;
+    Slow_log)
+	if [ -f /tmp/slow_log_timestamp ];then
+    	    begintimestamp=$(cat /tmp/slow_log_timestamp)
+	fi
+        if [ -n "$begintimestamp" ];then
+        ${MYSQL_sql} -e"select * from mysql.slow_log where start_time between FROM_UNIXTIME($begintimestamp) and now() order by start_time desc \G;"
+        fi
+        nowtimestamp=$(date +%s)
+	echo $nowtimestamp > /tmp/slow_log_timestamp
+        ;;
     Slave_IO_Running)
 	${MYSQL_sql} -e"show slave status \G" | grep -w "Slave_IO_Running" | awk '{print $2}'
         ;;

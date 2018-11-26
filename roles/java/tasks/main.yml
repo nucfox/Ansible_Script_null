@@ -7,4 +7,4 @@
 - name: "installation"
   yum:
     name: "{{ source_path }}/{{ java_program.results[0].item | basename }}"
-- include: java-env.yml
+- import_tasks: java-env.yml

@@ -1,4 +1,4 @@
-- hosts: [172.17.118.37]
+- hosts: [new_add]
   remote_user: root
   roles:
   - docker-ce

@@ -1,5 +1,7 @@
 - name: echo
-  shell: "hostname"
+  shell: "sleep 15"
+  async: 45
+  poll: 3
 #- name: restart_site
 #  shell: |
 #    source /etc/profile

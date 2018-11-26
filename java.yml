@@ -1,5 +1,7 @@
-- hosts: [172.24.17.221]
+- hosts: new_add
   remote_user: root
+  vars:
+    java_version: 8
   roles:
   - java
 

@@ -1,4 +1,4 @@
-- hosts: zabbix_agent
+- hosts: new_add
   gather_facts: True
   remote_user: root
   roles: 

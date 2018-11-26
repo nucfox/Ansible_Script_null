@@ -1,4 +1,4 @@
-- hosts: misc
+- hosts: new_add
   remote_user: root
   roles:
   - base

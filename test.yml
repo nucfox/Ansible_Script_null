@@ -1,5 +1,6 @@
 - hosts: [zabbix_agent]
-  serial: "{{ se_number }}"
+  #strategy: free
+  #serial: "{{ se_number }}"
   #serial: [1,2]
   #serial: ["10%","20%","100%"]
   remote_user: root
