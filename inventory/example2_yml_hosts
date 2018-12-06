@@ -1,0 +1,41 @@
+all:
+  children:
+    test:
+      children:
+        group1:
+          hosts:
+            172.17.118.33
+            172.17.118.34
+          vars:
+            vars1:
+              args1: values1
+              args2: values2
+              ansible_group_priority: 10
+        group2:
+          hosts:
+            172.17.118.31
+            172.17.118.32
+          vars:
+            vars1:
+              args1: values3
+              args2: values4
+              ansible_group_priority: 10
+    test2:
+      children:
+        group3:
+          hosts:
+            172.17.118.35
+            172.17.118.36
+          vars:
+            vars1:
+              args1: values5
+              args2: values6
+        group4:
+          hosts:
+            172.17.118.39
+            172.17.118.40
+          vars:
+            vars1:
+              args1: values7
+              args2: values8
+

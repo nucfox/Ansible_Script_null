@@ -1,0 +1,19 @@
+---
+all:
+  children:
+    test:
+      children:
+        group1:
+          hosts:
+            172.17.118.33
+          vars:
+            vars1:
+              args1: values1
+              args2: values2
+        group2:
+          hosts:
+            172.17.118.34
+          vars:
+            vars1:
+              args1: values3
+              args2: values4

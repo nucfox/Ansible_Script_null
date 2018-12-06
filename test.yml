@@ -1,4 +1,7 @@
-- hosts: [zabbix_agent]
+- hosts: test
+  #vars_files:
+  #  - global_vars/example_var2.yml
+  #  - global_vars/example_var1.yml
   #strategy: free
   #serial: "{{ se_number }}"
   #serial: [1,2]
