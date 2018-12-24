@@ -1,5 +1,51 @@
-{{ testvar }}
-{{ testvar1 }}
-{{ var1.stderr }}
-{{ var1.stderr | regex_replace('^(.*),.*', '\\1') }}
-{{ ansible_default_ipv4.address | regex_replace('.*\\.(\\d*)\\.(\\d*)$', '\\1\\2') }}
+"aaa={{ data_test }}"
+
+{% for i in range(0,data_test|length) %}
+{{ path_test[i] }}:{{ data_test[i] }}
+{% endfor %}
+
+{% for i in path_test %}
+{{ i }}:{{ data_test[loop.index0] }}
+{% endfor %}
+
+version: '3'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.1
+    container_name: elasticsearch
+    environment:
+      - "cluster.name=docker-cluster-log1"
+      - "node.name=test-$${HOSTNAME}"
+      - "network.publish_host=192.168.1.193"
+      - "discovery.zen.ping.unicast.hosts=[192.168.1.193,192.168.1.6,192.168.1.151]"
+      - "discovery.zen.minimum_master_nodes=2"
+      - "path.data=[u'/usr/share/elasticsearch/data', u'/usr/share/elasticsearch/data2']"
+      - "bootstrap.memory_lock=true"
+      - "http.cors.enabled=true"
+      - "http.cors.allow-origin=*"
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g -Des.enforce.bootstrap.checks=true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./esdata1:/usr/share/elasticsearch/data
+      - ./esdata2:/usr/share/elasticsearch/data2
+{% for i in path_test %}
+      - {{ i }}:{{ data_test[loop.index0] }}
+{% endfor %}
+      - esconfig1:/usr/share/elasticsearch/config
+      - esplugins1:/usr/share/elasticsearch/plugins
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - esnet
+
+volumes:
+  esconfig1:
+  esplugins1:
+
+networks:
+  esnet:

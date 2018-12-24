@@ -5,17 +5,18 @@ all:
       children:
         group1:
           hosts:
-            172.17.118.33
-            172.17.118.34
-          vars:
-            vars1:
-              args1: values1
-              args2: values2
+            h33:
+            h34:
+              ansible_host: 172.17.118.34
         group2:
           hosts:
-            172.17.118.31
-            172.17.118.32
-          vars:
-            vars1:
-              args1: values3
-              args2: values4
+            h31:
+              ansible_host: 172.17.118.31
+            h32:
+              ansible_host: 172.17.118.32
+    javag:
+      children:
+        jgroup1:
+          hosts:
+            172.17.118.33
+            172.17.118.34

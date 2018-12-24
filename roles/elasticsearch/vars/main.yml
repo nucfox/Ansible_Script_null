@@ -1,14 +1,16 @@
-elastic_user: elastic
-elastic_path: /usr/local
-source_path: /usr/local/src
-link_path: /usr/local/elasticsearch
-whether_repeat_install: true
+#elastic_user: elasticsearch
+elastic_path: /u01/elastic
+#source_path: /usr/local/src
+#link_path: /usr/local/elasticsearch
 
-cluster_name: internet_of_vehicles
-node_name: "elastic_vehicle_{{ ansible_default_ipv4.address | replace('.', '') }}"
-data_path: "{{ link_path }}/data"
-logs_path: "{{ link_path }}/logs"
-network_host: "{{ ansible_default_ipv4.address }}"
-http_port: 9200
-#discovery_hosts: "10.100.58.15"
-discovery_hosts: "10.100.58.44, 10.100.58.45, 10.100.58.46"
+#whether_repeat_install: true
+
+docker_image: docker.elastic.co/elasticsearch/elasticsearch:6.5.1
+
+cluster_name: docker-cluster-log1
+node_name: "{{ ansible_hostname }}-$${HOSTNAME}"
+data_path: "./esdata1"
+network_publish_host: "{{ ansible_default_ipv4.address }}"
+discovery_zen_ping_unicast_hosts: "[192.168.1.193,192.168.1.6,192.168.1.151]"
+discovery_zen_minimum_master_nodes: 2
+java_heap: -Xms1g -Xmx1g

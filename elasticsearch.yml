@@ -1,4 +1,6 @@
-- hosts: 10.100.58.15
+- hosts: 172.17.118.33
   remote_user: root
   roles:
   - elasticsearch
+  vars:
+    elastic_single: false

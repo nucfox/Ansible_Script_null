@@ -1,3 +1,7 @@
+full_path: /u01/test1
+data_test: [/usr/share/elasticsearch/data,/usr/share/elasticsearch/data2]
+path_test: [./elastic,/u01/test2/elastic]
+
 string: ABCdef
 
 source_path: /usr/local/src
@@ -6,29 +10,55 @@ testvar: "elastic_vehicle_{{ ansible_default_ipv4.address | regex_replace('^.*\\
 testvar1: "{{ ansible_hostname }}"
 
 
+ace_test:
+  - ip1: 192.168.1.1
+  - ip2: 192.168.1.2
+
+ace_java:
+  ace_var:
+    server:
+      - name: "ace_aa1"
+        ip: 192.168.1.1
+        port: 8675
+      - name: "ace_bb1"
+        ip: 192.168.1.1
+        port: 8674
+      - name: "ace_cc1"
+        ip: 192.168.1.1
+        port: 8673
+      - name: "ace_aa2"
+        ip: 192.168.1.2
+        port: 8675
+      - name: "ace_bb2"
+        ip: 192.168.1.2
+        port: 8674
+      - name: "ace_cc2"
+        ip: 192.168.1.2
+        port: 8673
+
 domain_definition:
   domain:
     cluster:
-    - name: "cluster1"
-    - name: "cluster2"
+      - name: "cluster1"
+      - name: "cluster2"
     server:
-    - name: "server11"
-      cluster: "cluster1"
-      port: "8080"
-    - name: "server12"
-      cluster: "cluster1"
-      port: "8090"
-    - name: "server21"
-      cluster: "cluster2"
-      port: "9080"
-    - name: "server22"
-      cluster: "cluster2"
-      port: "9090"
+      - name: "server11"
+        cluster: "cluster1"
+        port: "8080"
+      - name: "server12"
+        cluster: "cluster1"
+        port: "8090"
+      - name: "server21"
+        cluster: "cluster2"
+        port: "9080"
+      - name: "server22"
+        cluster: "cluster2"
+        port: "9090"
     library:
-    - name: "lib1"
-      target: "cluster1"
-    - name: "lib2"
-      target: "cluster2"
+      - name: "lib1"
+        target: "cluster1"
+      - name: "lib2"
+        target: "cluster2"
 
 Storage:
   dir:

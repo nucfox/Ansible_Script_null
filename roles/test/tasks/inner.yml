@@ -4,3 +4,11 @@
     - a
     - b
     - c
+- name: "path test"
+  debug:
+    msg: "{{ outer_item | dirname }} is . "
+  when: outer_item | dirname == '.'
+- name: "path test2"
+  debug:
+    msg: "{{ outer_item | dirname }} is not .  "
+  when: outer_item | dirname != '.'

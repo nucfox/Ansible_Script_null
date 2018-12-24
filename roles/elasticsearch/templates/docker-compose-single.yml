@@ -1,0 +1,34 @@
+version: '3'
+services:
+  elasticsearch:
+    image: {{ docker_image }}
+    container_name: elasticsearch
+    environment:
+      - "cluster.name=docker-elastic-single"
+      - "node.name={{ node_name }}"
+      - "discovery.type=single-node"
+      - "bootstrap.memory_lock=true"
+      - "http.cors.enabled=true"
+      - "http.cors.allow-origin=*"
+      - "ES_JAVA_OPTS={{ java_heap }} -Des.enforce.bootstrap.checks=true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - {{ data_path }}:/usr/share/elasticsearch/data
+      - esconfig1:/usr/share/elasticsearch/config
+      - esplugins1:/usr/share/elasticsearch/plugins
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - esnet
+
+volumes:
+  esconfig1:
+  esplugins1:
+
+networks:
+  esnet:

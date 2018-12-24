@@ -1,14 +1,25 @@
 ---
-- name: "creat {{ elastic_user }} user"
-  user: name={{ elastic_user }} append=yes
-- name: copy elastic package
-  copy: src={{ item }} dest={{ source_path }}
-  with_fileglob:
-  - main_program/*.tar.gz
-  register: elastic_program
-- command: ls "{{ link_path }}"
-  register: lslink
-  ignore_errors: true
-- include: elastic_install.yml
-  when: whether_repeat_install or lslink|failed
-- include: elastic_config.yml
+- name: "create data dir"
+  file:
+    path: "{{ elastic_path }}/{{ data_path }}"
+    state: directory
+    owner: 1000
+    group: 1000
+  when: data_path | dirname == '.'
+- name: "create full data path"
+  file:
+    path: "{{ data_path }}"
+    state: directory
+    owner: 1000
+    group: 1000
+  when: data_path | dirname != '.'
+- name: copy elastic docker-compose file
+  template:
+    src: docker-compose.yml
+    dest: "{{ elastic_path }}/docker-compose.yml"
+  when: not elastic_single
+- name: copy elastic docker-compose file
+  template:
+    src: docker-compose-single.yml
+    dest: "{{ elastic_path }}/docker-compose.yml"
+  when: elastic_single

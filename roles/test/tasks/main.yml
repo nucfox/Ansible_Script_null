@@ -1,5 +1,43 @@
-- debug:
-    msg: "{{ vars1.args1 }} and {{ vars1.args2 }}"
+- name: "full_path"
+  template:
+    src: test.yml
+    dest: /u01
+- include_tasks: inner.yml
+  with_items: "{{ path_test }}"
+  loop_control:
+    loop_var: outer_item
+
+#- name: "path test"
+#  debug:
+#    msg: "{{ path_test | dirname }} is . "
+#  when: path_test | dirname == '.'
+#- name: "path test2"
+#  debug:
+#    msg: "{{ path_test | dirname }} is not .  "
+#  when: path_test | dirname != '.'
+
+#- name: "Display all ports from cluster1"
+#  debug:
+#    var: item
+#  loop: "{{ ace_java | json_query(ace_java_query) }}"
+#  vars:
+#    ace_java_query: "ace_var.server[?ip=='192.168.1.1'].ip"
+#- name: "Display all server ports and names from cluster1"
+#  debug:
+#    var: item
+#  loop: "{{ domain_definition | json_query(server_name_cluster1_query) }}"
+#  vars:
+#    server_name_cluster1_query: "domain.server[?cluster=='cluster2'].{name: name, port: port}"
+#- name: "Display all cluster names"
+#  debug:
+#    var: item
+#  loop: "{{ domain_definition | json_query('domain.cluster[*].name') }}"
+#- debug:
+#    msg: "{{ item }} and ace_test.port"
+#  loop: "{{ ace_test | json_query('ip[*]') }}"
+#- name: "inventory var"
+#  debug:
+#    msg: "{{ ace_var }} and {{ ace_hostvar }}"
 #- name: echo
 #  shell: "sleep 15"
 #  async: 45
