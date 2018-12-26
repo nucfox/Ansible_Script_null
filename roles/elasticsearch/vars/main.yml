@@ -1,4 +1,4 @@
-#elastic_user: elasticsearch
+elastic_user: 1000
 elastic_path: /u01/elastic
 #source_path: /usr/local/src
 #link_path: /usr/local/elasticsearch

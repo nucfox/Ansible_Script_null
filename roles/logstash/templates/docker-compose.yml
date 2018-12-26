@@ -1,0 +1,9 @@
+version: '3'
+services:
+  logstash:
+    image: {{ docker_image }}
+    container_name: logstash
+    volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - ./pipeline:/usr/share/logstash/pipeline/
+    - ./settings/logstash.yml:/usr/share/logstash/config/logstash.yml

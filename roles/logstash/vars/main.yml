@@ -1,10 +1,8 @@
-logstash_user: logstash
-logstash_path: /usr/local
-source_path: /usr/local/src
-link_path: /usr/local/logstash
-whether_repeat_install: true
+logstash_user: 1000
+logstash_path: /u01/logstash
+#source_path: /usr/local/src
+#link_path: /usr/local/logstash
+#whether_repeat_install: true
 
-elastic_ip: "\"10.100.58.44:9200\", \"10.100.58.45:9200\", \"10.100.58.46:9200\""
-
-
+docker_image: docker.elastic.co/logstash/logstash:6.5.1
 

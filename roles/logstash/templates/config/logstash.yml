@@ -1,5 +1,0 @@
-pipeline.workers: 4
-pipeline.output.workers: 2
-pipeline.batch.size: 1500
-pipeline.batch.delay: 20
-path.config: "conf.d"

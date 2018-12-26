@@ -1,18 +1,31 @@
 ---
-- name: "creat {{ logstash_user }} user"
-  user: name={{ logstash_user }} append=yes
-- name: copy logstash package
-  copy: src={{ item }} dest={{ source_path }}
-  with_fileglob:
-  - main_program/*.tar.gz
-  register: logstash_program
-- command: ls "{{ link_path }}"
-  register: lslink
-  ignore_errors: true
-- include: logstash_install.yml
-  when: whether_repeat_install or lslink|failed
-- include: logstash_config.yml
-- include: plugin.yml
-  tags:
-  - install_plugin
-
+- name: "create pipeline dir"
+  file:
+    path: "{{ logstash_path }}/./pipeline"
+    state: directory
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_user }}"
+- name: "create settings dir"
+  file:
+    path: "{{ logstash_path }}/./settings"
+    state: directory
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_user }}"
+- name: copy logstash docker-compose file
+  template:
+    src: docker-compose.yml
+    dest: "{{ logstash_path }}/docker-compose.yml"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_user }}"
+- name: copy logstash.yml
+  template:
+    src: logstash.yml
+    dest: "{{ logstash_path }}/./settings"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_user }}"
+- name: copy template logstash.conf to pipeline
+  template:
+    src: logstash.conf
+    dest: "{{ logstash_path }}/./pipeline"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_user }}"

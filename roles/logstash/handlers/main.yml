@@ -1,6 +1,0 @@
----
-- name: start logstash_server
-  service:
-    enabled: yes
-    name: logstash
-    state: restarted
