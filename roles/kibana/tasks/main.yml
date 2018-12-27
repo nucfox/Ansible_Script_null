@@ -1,14 +1,13 @@
 ---
-- name: "creat {{ kibana_user }} user"
-  user: name={{ kibana_user }} append=yes
-- name: copy elastic package
-  copy: src={{ item }} dest={{ source_path }}
-  with_fileglob:
-  - main_program/*.tar.gz
-  register: kibana_program
-- command: ls "{{ link_path }}"
-  register: lslink
-  ignore_errors: true
-- include: kibana_install.yml
-  when: whether_repeat_install or lslink|failed
-- include: kibana_config.yml
+- name: "create kibana dir"
+  file:
+    path: "{{ kibana_path }}"
+    state: directory
+    owner: "{{ kibana_user }}"
+    group: "{{ kibana_user }}"
+- name: copy kibana docker-compose file
+  template:
+    src: docker-compose.yml
+    dest: "{{ kibana_path }}/docker-compose.yml"
+    owner: "{{ kibana_user }}"
+    group: "{{ kibana_user }}"

@@ -1,10 +1,10 @@
-kibana_user: kibana
-kibana_path: /usr/local
-source_path: /usr/local/src
-link_path: /usr/local/kibana
-whether_repeat_install: true
+kibana_user: 1000
+kibana_path: /u01/kibana
+#source_path: /usr/local/src
+#link_path: /usr/local/kibana
+#whether_repeat_install: true
+
+docker_image: docker.elastic.co/kibana/kibana:6.5.1
 
 kibana_port: 5601
-kibana_host: "{{ ansible_default_ipv4.address }}"
-elasticsearch_url: http://10.100.58.44:9200
-
+elasticsearch_url: http://192.168.1.193:9200

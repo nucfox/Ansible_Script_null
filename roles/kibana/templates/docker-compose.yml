@@ -1,0 +1,11 @@
+version: '3'
+services:
+  kibana:
+    image: {{ docker_image }}
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_URL: {{ elasticsearch_url }}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - {{ kibana_port }}:5601
