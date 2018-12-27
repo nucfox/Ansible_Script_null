@@ -1,0 +1,13 @@
+version: '3'
+services:
+  fluentd:
+    image: {{ docker_image }}
+    container_name: fluentd
+    ports:
+    - "24224:24224"
+    - "24224:24224/udp"
+    volumes:
+    - ./data:/fluentd/log
+    - ./etc/fluent.conf:/fluentd/etc/fluent.conf
+    - ./etc/config.d:/fluentd/etc/config.d
+    - /opt/ace_seek_jars/ace-gateway/logs:/opt/ace_seek_jars/ace-gateway/logs

@@ -1,0 +1,39 @@
+---
+- name: "create data dir"
+  file:
+    path: "{{ fluent_path }}/./data"
+    state: directory
+    owner: "{{ fluent_user }}"
+    group: "{{ fluent_user }}"
+- name: "create etc dir"
+  file:
+    path: "{{ fluent_path }}/./etc"
+    state: directory
+    owner: "{{ fluent_user }}"
+    group: "{{ fluent_user }}"
+- name: "create config.d dir"
+  file:
+    path: "{{ fluent_path }}/./etc/config.d"
+    state: directory
+    owner: "{{ fluent_user }}"
+    group: "{{ fluent_user }}"
+- name: copy fluent docker-compose file
+  template:
+    src: docker-compose.yml
+    dest: "{{ fluent_path }}/docker-compose.yml"
+    owner: "{{ fluent_user }}"
+    group: "{{ fluent_user }}"
+- name: copy fluent.conf to etc dir
+  template:
+    src: fluent.conf
+    dest: "{{ fluent_path }}/./etc"
+    owner: "{{ fluent_user }}"
+    group: "{{ fluent_user }}"
+- name: copy othen config file of fluent
+  template:
+    src: "{{ item }}"
+    dest: "{{ fluent_path }}/./etc/config.d"
+    owner: "{{ fluent_user }}"
+    group: "{{ fluent_user }}"
+  with_fileglob:
+  - "templates/config.d/*"

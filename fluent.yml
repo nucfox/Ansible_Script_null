@@ -1,0 +1,4 @@
+- hosts: 172.17.118.33
+  remote_user: root
+  roles:
+  - fluent
