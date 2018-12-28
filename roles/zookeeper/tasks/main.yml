@@ -1,0 +1,21 @@
+---
+- name: "create data dir"
+  file:
+    path: "{{ zoo_path }}/{{ item.value }}"
+    state: directory
+    owner: "{{ zoo_user }}"
+    group: "{{ zoo_user }}"
+  when: item.value | dirname == '.'
+  loop: "{{ zoo_data|dict2items }}"
+- name: "create full data path"
+  file:
+    path: "{{ item.value }}"
+    state: directory
+    owner: "{{ zoo_user }}"
+    group: "{{ zoo_user }}"
+  when: item.value | dirname != '.'
+  loop: "{{ zoo_data|dict2items }}"
+- name: copy zookeeper docker-compose file
+  template:
+    src: docker-compose.yml
+    dest: "{{ zoo_path }}/docker-compose.yml"

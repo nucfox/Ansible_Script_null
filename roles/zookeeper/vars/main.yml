@@ -1,0 +1,10 @@
+---
+zoo_user: 1000
+zoo_path: /u01/zookeeper
+
+docker_image: zookeeper
+#zoo_my_id: 
+zoo_servers: server.1=192.168.1.6:2888:3888 server.2=192.168.1.152:2888:3888 server.3=192.168.1.193:2888:3888
+zoo_data:
+  snapshot_data: ./data
+  transaction_data: ./datalog

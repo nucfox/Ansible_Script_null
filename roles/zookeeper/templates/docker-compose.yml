@@ -1,0 +1,17 @@
+version: '3.1'
+services:
+  zookeeper:
+    image: {{ docker_image }}
+    restart: always
+    hostname: zoo_{{ zoo_my_id }}
+    #ports:
+    #  - 2181:2181
+    #  - 2888:2888
+    #  - 3888:3888
+    environment:
+      ZOO_MY_ID: {{ zoo_my_id }}
+      ZOO_SERVERS: {{ zoo_servers }}
+    volumes:
+      - {{ zoo_data.snapshot_data }}:/data
+      - {{ zoo_data.transaction_data }}:/datalog
+    network_mode: "host"
