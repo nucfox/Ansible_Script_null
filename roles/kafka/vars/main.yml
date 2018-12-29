@@ -1,0 +1,12 @@
+---
+#kafka_user: 1000
+kafka_path: /u01/kafka
+
+docker_image: wurstmeister/kafka
+zookeeper_connect: 192.168.1.193:2181,192.168.1.6:2181,192.168.1.152:2181
+advertised_listeners: "{{ ansible_default_ipv4.address }}"
+jmx_hostname: "{{ ansible_default_ipv4.address }}"
+jmx_port: 1099
+
+kafka_log_dirs: /opt/kafka-logs
+volume_log_dirs: ./kafka-logs

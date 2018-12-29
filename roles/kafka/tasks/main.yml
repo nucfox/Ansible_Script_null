@@ -1,0 +1,16 @@
+---
+#- name: "create data dir"
+#  file:
+#    path: "{{ kafka_path }}/{{ volume_log_dirs }}"
+#    state: directory
+#  when: volume_log_dirs | dirname == '.'
+#- name: "create full data path"
+#  file:
+#    path: "{{ volume_log_dirs }}"
+#    state: directory
+#  when: volume_log_dirs | dirname != '.'
+- name: copy kafka docker-compose file
+  template:
+    src: docker-compose.yml
+    dest: "{{ kafka_path }}/docker-compose.yml"
+
