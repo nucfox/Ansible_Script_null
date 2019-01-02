@@ -22,7 +22,28 @@ dataLogDir|ZOO_DATA_LOG_DIR|此选项将指示计算机将事务日志写入data
 #server.1
 echo "1" > /data/myid
 ```
-&emsp;ansible安装需要为host定义inventory变量ZOO_MY_ID,以区分myid  
+&emsp;ansible安装需要为host定义inventory变量zoo_my_id,以区分myid  
+###### ini格式
+```
+[zookeeper]
+192.168.1.1 zoo_my_id=1
+192.168.1.2 zoo_my_id=2
+192.168.1.3 zoo_my_id=3
+```
+###### yml格式
+
+```
+all:
+  children:
+    zookeeper:
+      hosts:
+        192.168.1.1:
+          zoo_my_id: 1
+        192.168.1.2:
+          zoo_my_id: 2
+        192.168.1.3:
+          zoo_my_id: 3
+```
 ##### [zookeeper 4字命令](https://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_zkCommands)  
 ---
 ZooKeeper 四字命令 | 功能描述
