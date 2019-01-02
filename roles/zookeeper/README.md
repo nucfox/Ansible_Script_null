@@ -59,6 +59,7 @@ get|get path [watch]|获取节点信息,节点路径必须以/开头的绝对路
 stat|stat path [watch]|查看节点状态信息,如stat /test,只有状态信息,没有节点的值
 addauth|addauth scheme auth|节点认证,如addauth digest username:password
 getAcl|getAcl path|获取节点的Acl, 如getAcl /test
+setAcl|setAcl path acl|用于设置节点Acl,Acl由三部分构成:1为scheme,2为user,3为permission,一般情况下表示为scheme:id:permissions
 set|set path data [version]|设置节点的值,如 set /test hellotest
 history||列出历史命令,配合redo使用
 redo|redo cmdno|history列出历史命令编号,redo 10
@@ -72,7 +73,6 @@ ls2 | ls2 path [watch]|ls命令的增强版,比ls命令多输出本节点信息
 ---
 
 Acl权限说明  
----
 scheme | id
 ---|----
 world | 只有一个id,叫anyone,world:anyone代表任何人,zookeeper中对所有人有权限的节点就是属于world:anyone的
@@ -82,7 +82,6 @@ ip|id为客户机的IP地址，设置的时候可以设置一个ip段,比如ip:1
 super|在这种scheme情况下，对应的id拥有超级权限，可以做任何事情(cdrwa)
 ---
 permissions  
----
 权限 | 说明
 ---|---
 CREATE(c) | 创建权限，可以在在当前node下创建child node
