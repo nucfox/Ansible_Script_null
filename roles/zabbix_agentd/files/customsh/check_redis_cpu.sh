@@ -25,13 +25,13 @@ if [ "${redis_passwd}" ];then
         time_before=$(cut -d: -f1 /tmp/redis_time_before_$redis_port)
         result_before=$(cut -d: -f2 /tmp/redis_time_before_$redis_port)
         realres=$(awk -v rnow=$result_now -v rbe=$result_before -v tnow=$time_now -v tbe=$time_before 'BEGIN{printf "%.2f\n",(rnow-rbe)/(tnow-tbe)*100}')
-        echo "$time_now:$result_now" > /tmp/redis_info_key_$redis_port
+        echo "$time_now:$result_now" > /tmp/redis_${info_key}_${redis_port}
 else
         time_now=$(date +%s)
         result_now=$(${redis_cli_path} -p ${redis_port} info|grep "${info_key}:"|cut -d: -f2)
         time_before=$(cut -d: -f1 /tmp/redis_time_before_$redis_port)
         result_before=$(cut -d: -f2 /tmp/redis_time_before_$redis_port)
         realres=$(awk -v rnow=$result_now -v rbe=$result_before -v tnow=$time_now -v tbe=$time_before 'BEGIN{printf "%.2f\n",(rnow-rbe)/(tnow-tbe)*100}')
-        echo "$time_now:$result_now" > /tmp/redis_info_key_$redis_port
+        echo "$time_now:$result_now" > /tmp/redis_${info_key}_${redis_port}
 fi
 echo $realres
