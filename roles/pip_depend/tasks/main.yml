@@ -1,0 +1,11 @@
+- name: upgrade pip
+  pip:
+    name: "{{ item }}"
+    extra_args: "--upgrade"
+  loop:
+    - "pip"
+    - "setuptools"
+- name: install pip depend
+  pip:
+    name: "{{ item }}"
+  loop: "{{ pip_var | flatten(levels=1) }}"

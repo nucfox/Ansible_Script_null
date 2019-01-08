@@ -1,0 +1,7 @@
+- name: config sudoers
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    line: "{{ item }}"
+    validate: '/usr/sbin/visudo -cf %s'
+  loop: "{{ text_var | flatten(levels=1) }}"

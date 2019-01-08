@@ -1,0 +1,4 @@
+- hosts: zabbix_agent
+  remote_user: root
+  roles:
+  - edit_sudoers
