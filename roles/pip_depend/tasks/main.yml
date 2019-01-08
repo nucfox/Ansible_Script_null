@@ -5,6 +5,18 @@
   loop:
     - "pip"
     - "setuptools"
+- name: uninstall pip depend
+  pip:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "urllib3"
+    - "chardet"
+- name: install pip depend
+  pip:
+    name: "{{ item }}"
+  loop:
+    - "requests"
 - name: install pip depend
   pip:
     name: "{{ item }}"
