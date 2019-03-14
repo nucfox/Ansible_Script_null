@@ -1,7 +1,8 @@
-- hosts: [new_add]
+- hosts: [172.17.115.33]
   remote_user: root
   roles:
   - docker-ce
   vars:
     FI: 0
     DOCKER_VERSION: docker-ce
+    DOCKER_CLI_VERSION: docker-ce-cli
