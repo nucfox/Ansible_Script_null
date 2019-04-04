@@ -1,7 +1,7 @@
 ---
 - name: Installation base tools
   yum: name={{ item }} state=latest
-  with_items:
+  loop:
   - libselinux-python
   - vim
   - gcc

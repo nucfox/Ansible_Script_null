@@ -1,6 +1,6 @@
 - name: Installation dependencies NGINX
   yum: name="{{ item }}" state="latest"
-  with_items:
+  loop:
   - unzip
   - patch
   - pcre
@@ -23,6 +23,11 @@
 #    path: "{{ source_path }}/{{ nginx_program.results[0].item | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
 #    state: absent
 #  when: whether_repeat_install
+- name: get ngx_realtime_request_module
+  get_url:
+    url: https://codeload.github.com/magicbear/ngx_realtime_request_module/zip/master
+    dest: "{{ source_path }}"
+  register: ngx_realtime_request_module
 - name: get nginx_upstream_check_module
   get_url:
     url: https://codeload.github.com/yaoweibin/nginx_upstream_check_module/zip/master
@@ -56,6 +61,11 @@
 - debug:
     msg: "{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
     verbosity: 2
+- name: unarchive ngx_realtime_request_module
+  unarchive:
+    src: "{{ source_path }}/{{ ngx_realtime_request_module.dest | basename }}"
+    dest: "{{ source_path }}"
+    copy: "no"
 - name: unarchive nginx_upstream_check_module
   unarchive:
     src: "{{ source_path }}/{{ nginx_upstream_check_module_name.dest | basename }}"
@@ -76,7 +86,7 @@
   args:
     chdir: "{{ source_path }}/{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
 - name: install nginx_server
-  shell: "./configure --prefix={{ nginx_path }}/{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module --with-http_realip_module --with-http_sub_module --add-module={{ source_path }}/{{ nginx_upstream_check_module_name.dest | basename | regex_replace('^(.*).zip$', '\\1') }}/ --add-module={{ source_path }}/{{ nginx_sticky_module_ng_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} && make -j2 && make install"
+  shell: "./configure --prefix={{ nginx_path }}/{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module --with-http_realip_module --with-http_sub_module --add-module={{ source_path }}/{{ nginx_upstream_check_module_name.dest | basename | regex_replace('^(.*).zip$', '\\1') }}/ --add-module={{ source_path }}/{{ ngx_realtime_request_module.dest | basename | regex_replace('^(.*).zip$', '\\1') }} --add-module={{ source_path }}/{{ nginx_sticky_module_ng_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }} && make -j2 && make install"
   args:
     chdir: "{{ source_path }}/{{ nginx_name.dest | basename | regex_replace('^(.*).tar.gz$', '\\1') }}"
 - name: check if /usr/local/nginx exists

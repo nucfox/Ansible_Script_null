@@ -1,4 +1,4 @@
-- hosts: [172.17.118.31]
+- hosts: [172.17.15.89]
   remote_user: root
   roles:
   - redis
