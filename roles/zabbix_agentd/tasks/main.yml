@@ -1,7 +1,7 @@
 ---
 - name: Installation dependencies zabbix-agent
   yum: name="{{ item }}" state="latest"
-  with_items:
+  loop:
   - pcre
   - pcre-devel
 - name: creat zabbix user
