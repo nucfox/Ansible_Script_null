@@ -1,4 +1,4 @@
-- hosts: [172.17.15.94]
+- hosts: [47.93.177.131]
   remote_user: root
   vars:
     nginx_version: nginx-1.14.2

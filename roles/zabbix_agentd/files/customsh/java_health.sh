@@ -19,6 +19,7 @@ case "$javaname" in
     "ace-tool")res=$(timeout $_timeout curl -s $_IP:8712/actuator/health | jq -r .status);;
     "ace-center")res=$(timeout $_timeout curl -s $_IP:8761/actuator/health | jq -r .status);;
     "ace-scheduled")res=$(timeout $_timeout curl -s $_IP:8763/actuator/health | jq -r .status);;
+    "ace-admin")res=$(timeout $_timeout curl -s $_IP:8762/actuator/health | jq -r .status);;
     "*")exit 1;;
 esac
 
