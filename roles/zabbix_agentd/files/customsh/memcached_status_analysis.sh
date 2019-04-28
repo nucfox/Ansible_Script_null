@@ -23,6 +23,13 @@ analysis_cpu() {
     echo "$time_now:$result_now" > /tmp/mem_${METRIC}_${PORT}
 }
 
+analysis_io() {
+    flow_now=${STATUS}
+    flow_before=$(cat /tmp/mem_${METRIC}_${PORT})
+    realres=$(awk -v flown=$flow_now -v flowb=$flow_before 'BEGIN{printf "%d",flown-flowb}')
+    echo "$flow_now" > /tmp/mem_${METRIC}_${PORT}
+}
+
 case $METRIC in
     'rusage_system')
         STATUS=`echo "stats" | nc $IP $PORT | grep -w "$METRIC" | awk '{print $3}'`
@@ -38,6 +45,16 @@ case $METRIC in
         _get_hits=`echo "stats" | nc $IP $PORT | grep -w "get_hits" | awk '{print $3}'`
         _cmd_get=`echo "stats" | nc $IP $PORT | grep -w "cmd_get" | awk '{print $3}'`
         realres=$(awk -v ghits=$_get_hits -v cget=$_cmd_get 'BEGIN{printf "%.2f",ghits/cget*100}')
+        echo $realres
+        ;;
+    'bytes_read_analysis')
+        STATUS=`echo "stats" | nc $IP $PORT | grep -w "bytes_read" | awk '{print $3}'`
+        analysis_io
+        echo $realres
+        ;;
+    'bytes_written_analysis')
+        STATUS=`echo "stats" | nc $IP $PORT | grep -w "bytes_written" | awk '{print $3}'`
+        analysis_io
         echo $realres
         ;;
         *)
